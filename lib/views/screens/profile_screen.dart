@@ -6,13 +6,14 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:tiktokclone/constants.dart';
+import 'package:tiktokclone/controllers/video_controller.dart';
 
 import '../../controllers/profile_controller.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
 
-   ProfileScreen({Key? key, required this.uid}) : super(key: key);
+  ProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -20,6 +21,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final ProfileController profileController = Get.put((ProfileController()));
+  final VideoController videoController = Get.put(VideoController());
 
   void initState(){
     super.initState();
@@ -30,23 +32,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ProfileController>(
-      init: ProfileController(),
-      builder: (controller) {
-        if (controller.user.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.black12,
-            leading: const Icon(Icons.person_add_alt_1_outlined),
-            actions: const [Icon(Icons.more_horiz)],
-            title: Text(
-              controller.user['name'],
-              style:
-                  const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-            ),
+        init: ProfileController(),
+        builder: (controller) {
+          if (controller.user.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.black12,
+              leading: const Icon(Icons.person_add_alt_1_outlined),
+              actions: const [Icon(Icons.more_horiz)],
+              title: Text(
+                controller.user['name'],
+                style:
+                const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
             ),
             body: SafeArea(
               child: SingleChildScrollView(
@@ -64,9 +66,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 height: 100,
                                 width: 100,
                                 placeholder: (context, url) =>
-                                    const CircularProgressIndicator(),
+                                const CircularProgressIndicator(),
                                 errorWidget: (context, url, error) =>
-                                    const Icon(Icons.error),
+                                const Icon(Icons.error),
                               ),
                             ),
                           ],
@@ -99,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: 1,
                               height: 15,
                               margin:
-                                  const EdgeInsets.symmetric(horizontal: 15),
+                              const EdgeInsets.symmetric(horizontal: 15),
                             ),
                             Column(
                               children: [
@@ -123,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               width: 1,
                               height: 15,
                               margin:
-                                  const EdgeInsets.symmetric(horizontal: 15),
+                              const EdgeInsets.symmetric(horizontal: 15),
                             ),
                             Column(
                               children: [
@@ -168,8 +170,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 widget.uid == authController.user.uid
                                     ? 'Sign Out'
                                     : controller.user['isFollowing']
-                                        ? 'Unfollow'
-                                        : 'Follow',
+                                    ? 'Unfollow'
+                                    : 'Follow',
                                 style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -178,6 +180,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Text("Created Activities:",style: TextStyle(
+                            fontSize: 20,color: Colors.deepOrangeAccent
+                        ),),
                         // Video List
                         GridView.builder(
                             padding: const EdgeInsets.all(10),
@@ -185,28 +193,87 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.user['thumbnails'].length,
                             gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    childAspectRatio: 3 / 2,
-                                    crossAxisSpacing: 10,
-                                    mainAxisSpacing: 10),
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 3 / 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10),
                             itemBuilder: (context, index) {
+                              final data = videoController.videoList[index];
                               String thumbnail =
-                                  controller.user['thumbnails'][index];
+                              controller.user['thumbnails'][index];
                               return Container(
-                                  decoration: const BoxDecoration(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(8.0)),
+
+                                decoration: const BoxDecoration(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0)),
+                                ),
+
+                                child: ClipRRect(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0)),
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        onTap: (){},
+                                        child: CachedNetworkImage(
+                                          imageUrl: thumbnail,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      Text( data.caption),
+                                    ],
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(8.0)),
-                                    child: CachedNetworkImage(
-                                      imageUrl: thumbnail,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ));
-                            })
+                                ),
+                              );
+                            }),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Text("Activities participated in:",style: TextStyle(
+                            fontSize: 20,color: Colors.deepOrangeAccent
+                        ),),
+                        // Video List
+                        GridView.builder(
+                            padding: const EdgeInsets.all(10),
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: controller.user['thumbnails'].length,
+                            gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: 3 / 2,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10),
+                            itemBuilder: (context, index) {
+                              final data = videoController.videoList[index];
+                              String thumbnail =
+                              controller.user['thumbnails'][index];
+                              return Container(
+
+                                decoration: const BoxDecoration(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0)),
+                                ),
+
+                                child: ClipRRect(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(8.0)),
+                                  child: Column(
+                                    children: [
+                                      InkWell(
+                                        onTap: (){},
+                                        child: CachedNetworkImage(
+                                          imageUrl: thumbnail,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                      Text( data.caption),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
                       ],
                     )
                   ],

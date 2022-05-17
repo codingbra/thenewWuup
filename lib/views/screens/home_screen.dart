@@ -45,10 +45,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           BottomNavigationBarItem(
               icon: Icon(
-                Icons.message,
+                Icons.accessibility,
                 size: 30,
               ),
-              label: "Message"),
+              label: "W U U P"),
           BottomNavigationBarItem(
               icon: Icon(
                 Icons.person,

@@ -35,7 +35,8 @@ class UploadVideoController extends GetxController {
   }
 
   // upload video
-  uploadVideo(String songName, String caption, String videoPath) async {
+  uploadVideo(String songName, String caption, String videoPath,String location,
+      String time) async {
     try {
       String uid = firebaseAuth.currentUser!.uid;
       DocumentSnapshot userDoc =
@@ -55,6 +56,8 @@ class UploadVideoController extends GetxController {
           songName: songName,
           caption: caption,
           videoUrl: videoUrl,
+          location: location,
+          time: time,
           profilePhoto:
               (userDoc.data()! as Map<String, dynamic>)['profilePhoto'],
           thumbnail: thumbnail);
