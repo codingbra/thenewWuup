@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:tiktokclone/tinder_swipe/group_activity.dart';
 import 'package:tiktokclone/tinder_swipe/home_swipe.dart';
 import 'package:tiktokclone/views/screens/add_video_screen.dart';
 import 'package:tiktokclone/views/screens/profile_screen.dart';
@@ -14,7 +15,7 @@ import 'controllers/auth_controller.dart';
   VideoScreen(),
   SearchScreen(),
   const AddVideoScreen(),
-  const HomeSwipe(),
+  GroupActivity(),
   ProfileScreen(uid: authController.user.uid),
 
 ];

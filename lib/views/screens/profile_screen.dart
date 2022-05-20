@@ -7,6 +7,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:tiktokclone/constants.dart';
 import 'package:tiktokclone/controllers/video_controller.dart';
+import 'package:tiktokclone/views/screens/activity_screen.dart';
 
 import '../../controllers/profile_controller.dart';
 
@@ -43,7 +44,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             appBar: AppBar(
               backgroundColor: Colors.black12,
               leading: const Icon(Icons.person_add_alt_1_outlined),
-              actions: const [Icon(Icons.more_horiz)],
+              actions:  [IconButton(
+                  onPressed: (){
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => ActivityScreen()));
+                  },
+                  icon: Icon(Icons.more_horiz)),],
               title: Text(
                 controller.user['name'],
                 style:
@@ -230,50 +236,50 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(
                           height: 15,
                         ),
-                        Text("Activities participated in:",style: TextStyle(
-                            fontSize: 20,color: Colors.deepOrangeAccent
-                        ),),
+                        // Text("Activities participated in:",style: TextStyle(
+                        //     fontSize: 20,color: Colors.deepOrangeAccent
+                        // ),),
                         // Video List
-                        GridView.builder(
-                            padding: const EdgeInsets.all(10),
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: controller.user['thumbnails'].length,
-                            gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 3 / 2,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10),
-                            itemBuilder: (context, index) {
-                              final data = videoController.videoList[index];
-                              String thumbnail =
-                              controller.user['thumbnails'][index];
-                              return Container(
-
-                                decoration: const BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(8.0)),
-                                ),
-
-                                child: ClipRRect(
-                                  borderRadius:
-                                  BorderRadius.all(Radius.circular(8.0)),
-                                  child: Column(
-                                    children: [
-                                      InkWell(
-                                        onTap: (){},
-                                        child: CachedNetworkImage(
-                                          imageUrl: thumbnail,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      Text( data.caption),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }),
+                        // GridView.builder(
+                        //     padding: const EdgeInsets.all(10),
+                        //     shrinkWrap: true,
+                        //     physics: const NeverScrollableScrollPhysics(),
+                        //     itemCount: controller.user['thumbnails'].length,
+                        //     gridDelegate:
+                        //     const SliverGridDelegateWithFixedCrossAxisCount(
+                        //         crossAxisCount: 2,
+                        //         childAspectRatio: 3 / 2,
+                        //         crossAxisSpacing: 10,
+                        //         mainAxisSpacing: 10),
+                        //     itemBuilder: (context, index) {
+                        //       final data = videoController.videoList[index];
+                        //       String thumbnail =
+                        //       controller.user['thumbnails'][index];
+                        //       return Container(
+                        //
+                        //         decoration: const BoxDecoration(
+                        //           borderRadius:
+                        //           BorderRadius.all(Radius.circular(8.0)),
+                        //         ),
+                        //
+                        //         child: ClipRRect(
+                        //           borderRadius:
+                        //           BorderRadius.all(Radius.circular(8.0)),
+                        //           child: Column(
+                        //             children: [
+                        //               InkWell(
+                        //                 onTap: (){},
+                        //                 child: CachedNetworkImage(
+                        //                   imageUrl: thumbnail,
+                        //                   fit: BoxFit.cover,
+                        //                 ),
+                        //               ),
+                        //               Text( data.caption),
+                        //             ],
+                        //           ),
+                        //         ),
+                        //       );
+                        //     }),
                       ],
                     )
                   ],

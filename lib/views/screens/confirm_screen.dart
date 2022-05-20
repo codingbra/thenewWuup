@@ -118,15 +118,6 @@ class _ConfirmScreenState extends State<ConfirmScreen> {
                 const SizedBox(
                   height: 10,
                 ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 10),
-                  width: MediaQuery.of(context).size.width - 20,
-                  child: TextInputField(
-                    controller: _timeController,
-                    labelText: "Time: ",
-                    icon: Icons.timer,
-                  ),
-                ),
                 const SizedBox(
                   height: 10,
                 ),

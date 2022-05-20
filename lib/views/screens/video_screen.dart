@@ -91,7 +91,7 @@ class VideoScreen extends StatelessWidget {
                 VideoPlayerItem(videoUrl: data.videoUrl),
                 Column(
                   children: [
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 200),
                     Expanded(
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
@@ -120,6 +120,15 @@ class VideoScreen extends StatelessWidget {
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold),
                                   ),
+                                  Text(
+                                    data.time,
+                                    style: const TextStyle(
+                                        fontSize: 15,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+
+
                                   Row(
                                     children: [
                                       const Icon(
