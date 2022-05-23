@@ -363,16 +363,6 @@ class ReadData extends StatelessWidget {
     return likedActivities.toString();
   }
 
-  Future<void> checkWhetherUidExistsInSnap() async {
-    // final uid = firebaseAuth.currentUser!.uid;
-    CollectionReference users = FirebaseFirestore.instance.collection('groups');
-    var doc = await users.doc("uid").get();
-    if (doc.id.contains(uid)) {
-      print("It happened baby");
-    } else {
-      print("Data not contained");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

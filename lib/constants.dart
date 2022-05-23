@@ -8,12 +8,13 @@ import 'package:tiktokclone/tinder_swipe/home_swipe.dart';
 import 'package:tiktokclone/views/screens/add_video_screen.dart';
 import 'package:tiktokclone/views/screens/profile_screen.dart';
 import 'package:tiktokclone/views/screens/search_screen.dart';
+import 'package:tiktokclone/views/screens/tryoutScreen.dart';
 import 'package:tiktokclone/views/screens/video_screen.dart';
 import 'controllers/auth_controller.dart';
 
   List pages = [
   VideoScreen(),
-  SearchScreen(),
+    SearchScreen(),
   const AddVideoScreen(),
   GroupActivity(),
   ProfileScreen(uid: authController.user.uid),
