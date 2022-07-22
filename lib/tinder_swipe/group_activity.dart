@@ -1,6 +1,9 @@
 
 
 
+import 'dart:collection';
+import 'dart:core';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:flutter/material.dart';
@@ -12,17 +15,18 @@ import 'package:tiktokclone/controllers/profile_controller.dart';
 
 import 'package:tiktokclone/controllers/swipe_search_controller.dart';
 
-import 'package:tiktokclone/tinder_swipe/home_swipe.dart';
 import 'package:tiktokclone/tinder_swipe/swipe_functions/swipe_alert_function.dart';
 import 'package:tiktokclone/tinder_swipe/swipe_methods/firestore_methods.dart';
 import 'package:tiktokclone/tinder_swipe/swipe_utils/swipe_constants.dart';
 import 'package:tiktokclone/views/screens/home_screen.dart';
-import 'package:tiktokclone/views/screens/video_screen.dart';
 
 import 'package:tiktokclone/views/widgets/text_inputField.dart';
 import 'package:tiktokclone/models/user.dart' as model;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
+
+// this is the core class to create group activities where all the information
+// is gathered to create a group activity.
 
 class GroupActivity extends StatefulWidget {
   const GroupActivity({Key? key}) : super(key: key);
@@ -32,19 +36,25 @@ class GroupActivity extends StatefulWidget {
 }
 
 class _GroupActivityState extends State<GroupActivity> {
+  // create all the necessary conrollers for the textfields
   final TextEditingController _groupNameController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _timeController = TextEditingController();
   final TextEditingController _friendsController = TextEditingController();
 
+  // create instance of firebase
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _isLoading = false;
+
+  // RX -> to be double checked
   final Rx<Map<String, dynamic>> _user = Rx<Map<String, dynamic>>({});
 
   //List<String> friendsList = SwipeSearchScreen().friendsChosen;
   final List<String> friendsChosen = [];
   final List<String> friendsChosenUid = [];
+  final List<String> votedForReal = [];
   List<String> likedActivities = [];
+  Map activityLikeMap = {};
 
   final SwipeSearchController swipeSearchController =
       Get.put(SwipeSearchController());
@@ -74,11 +84,16 @@ class _GroupActivityState extends State<GroupActivity> {
       _isLoading = true;
     });
 
+    void addHasPosted() async{
+
+    }
+
     String uid = firebaseAuth.currentUser!.uid;
     DocumentSnapshot userDoc =
         await firestore.collection('users').doc(uid).get();
     String name = (userDoc.data()! as Map<String, dynamic>)['name'];
     String hasVoted = (userDoc.data()! as Map<String, dynamic>)['uid'];
+
 
     DocumentSnapshot likedActivities = await _firestore
         .collection("groups")
@@ -97,7 +112,8 @@ class _GroupActivityState extends State<GroupActivity> {
         friendsChosen,
         friendsChosenUid,
         hasVoted,
-        chosenActivities
+        chosenActivities,
+        votedForReal
     );
   }
 
@@ -132,15 +148,6 @@ class _GroupActivityState extends State<GroupActivity> {
         }, // update database
         nopeAction: () {
           actions(context, names[i], "Rejected");
-          counterForActivities =
-              {names[i].toString, counter} as Map<String, int>;
-          firestore
-              .collection("Unliked Activities")
-              .doc("Unliked Activities")
-              .set(
-            {"liked": "Unliked Activities"},
-          );
-          print("counterForActivities.toString()");
         },
         superlikeAction: () {
           actions(context, names[i], "SuperLiked");
@@ -229,8 +236,7 @@ class _GroupActivityState extends State<GroupActivity> {
                                           .showSnackBar(SnackBar(
                                               content:
                                                   Text("already in group")));
-                                    }
-                                    else if (user.uid ==
+                                    } else if (user.uid ==
                                         firebaseAuth.currentUser!.uid) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
@@ -322,13 +328,16 @@ class _GroupActivityState extends State<GroupActivity> {
                     ),
                   ],
                 ),
-                SizedBox(height: 12,),
+                SizedBox(
+                  height: 12,
+                ),
                 InkWell(
                   child: Center(
                     child: FloatingActionButton(
                       backgroundColor: Colors.green,
                       child: Icon(Icons.add),
                       onPressed: () {
+                        votedForReal.add(firebaseAuth.currentUser!.uid);
                         postGroup();
 
                         //print(friendsList);
@@ -336,7 +345,7 @@ class _GroupActivityState extends State<GroupActivity> {
                         //     'DocumentSnapshot added with ID: ${value.id}'));
                         setState(() {});
                         Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ReadData()));
+                            builder: (context) => ConfirmationScreen()));
                       },
                     ),
                   ),
@@ -351,8 +360,8 @@ class _GroupActivityState extends State<GroupActivity> {
 }
 
 // SHOW THE ACTIVITIES //////////////////////////////////////////////////////////////////////////////////////////
-
-class ReadData extends StatelessWidget {
+// here the summary of the activity is shown after creating it
+class ConfirmationScreen extends StatelessWidget {
   final uid = FirebaseAuth.instance.currentUser!.uid;
 
   Future<String> getThemLikes() async {
@@ -363,15 +372,11 @@ class ReadData extends StatelessWidget {
     return likedActivities.toString();
   }
 
-
   @override
   Widget build(BuildContext context) {
+    // Referenz festlegen - hier gruppen
     CollectionReference groups =
         FirebaseFirestore.instance.collection('groups');
-
-    // Query<Map<String, dynamic>> reference = FirebaseFirestore.instance
-    //     .collection("groups")
-    //     .where(FirebaseAuth.instance.currentUser!.uid == ["uid"]);
 
     return Scaffold(
       appBar: AppBar(
@@ -380,40 +385,37 @@ class ReadData extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => HomeScreen()));
+                Navigator.of(context) // here you can go back to the hommescreen
+                    .push(
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
               },
               icon: Icon(Icons.home)),
-
         ],
       ),
       body: StreamBuilder(
-          //stream: FirebaseFirestore.instance.collection('groups').snapshots(),
-          stream: groups.orderBy('datePublished',descending: true).snapshots(),
+          // groups = collection reference as defined above
+          stream: groups.orderBy('datePublished', descending: true).snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
+              // progress indicator if loading
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-            // if(snapshot.hasData){
-            //   if(snapshot.data.toString().contains(uid))
-            //   print("it has the uid");
-            // }
-
-            // if(snapshot.data!.docs.contains(firebaseAuth.currentUser!.uid)){
             return ListView(
+              // hole data as querysnapshot in den Dokumenten und mappe - groups
               children: snapshot.data!.docs.map((groups) {
                 Timestamp stamp = groups["datePublished"] as Timestamp;
                 return Column(
                   children: [
+                    // if braucht es denn sonst zeigt es alle kreiierten Aktivitäten an.
                     if (groups["uid"] == FirebaseAuth.instance.currentUser!.uid)
                       Card(
                         elevation: 12,
                         child: ListTile(
                           title: Text(
-                            "Activity Created on : ${stamp.toDate()} :" +
+                            "Activity Created on : ${stamp.toDate()} " +
                                 "\nYour group is called: " +
                                 groups['groupName'] +
                                 "\n the activity will take place on the: " +
@@ -440,3 +442,20 @@ class Content {
 
   Content({required this.text});
 }
+
+// DEAD CODE ///////////////////////////////////////////
+/**
+ *
+ *
+ *
+ *     print("Something happened");
+    print("Counter" + counterForActivities.toString());
+    counterForActivities =
+    {names[i].toString, counter} as Map<String, int>;
+    firestore
+    .collection("Unliked Activities")
+    .doc("Unliked Activities")
+    .set(
+    {"liked": counterForActivities},
+    );
+ */

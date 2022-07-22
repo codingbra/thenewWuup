@@ -8,6 +8,7 @@ import 'package:get/get_state_manager/src/simple/get_state.dart';
 import 'package:tiktokclone/constants.dart';
 import 'package:tiktokclone/controllers/video_controller.dart';
 import 'package:tiktokclone/views/screens/activity_screen.dart';
+import 'package:tiktokclone/views/screens/tryouts/FBTryouts.dart';
 
 import '../../controllers/profile_controller.dart';
 
@@ -236,6 +237,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(
                           height: 15,
                         ),
+                        Container(
+                          child: ElevatedButton(onPressed: () {
+                            Navigator.of(context)
+                                .push(MaterialPageRoute(builder: (context) => TryoutsScreen()));
+                           }, child: Text("Tryouts"),
+
+                          ),
+                        )
                         // Text("Activities participated in:",style: TextStyle(
                         //     fontSize: 20,color: Colors.deepOrangeAccent
                         // ),),

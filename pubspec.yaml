@@ -56,6 +56,7 @@ dependencies:
   timezone: ^0.8.0
   firebase_in_app_messaging: ^0.6.0+14
   getwidget: ^2.0.5
+  date_field: ^3.0.0
 
 
 

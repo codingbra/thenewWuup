@@ -14,7 +14,8 @@ import '../views/screens/login_screen.dart';
 
 class AuthController extends GetxController {
   static AuthController instance = Get.find();
-  late Rx<File?> _pickedImage;
+  late Rx<File?> _pickedImage; // Foundation class used for custom Types outside
+  // the common native Dart types.
   late Rx<User?> _user;
 
   File? get profilePhoto => _pickedImage.value;
@@ -27,14 +28,15 @@ class AuthController extends GetxController {
     super.onReady();
     _user = Rx<User?>(firebaseAuth.currentUser);
     _user.bindStream(firebaseAuth.authStateChanges());
-    ever(_user, _setInitialScreen);
+    ever(_user, _setInitialScreen); // ever Called every time listener changes.
+    // As long as the condition returns true
   }
 
   _setInitialScreen(User? user) {
-    if (user == null) {
+    if (user == null) { // if user is NOT logged in then to login screen
       Get.offAll(() => LoginScreen());
     } else {
-      Get.offAll(() => HomeScreen());
+      Get.offAll(() => HomeScreen()); // else show home screen directly
     }
   }
 
