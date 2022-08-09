@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_cards/swipe_cards.dart';
 import 'package:tiktokclone/constants.dart';
-import 'package:tiktokclone/tinder_swipe/group_activity.dart';
+import 'package:tiktokclone/tinder_swipe/create_group_activity.dart';
 import 'package:tiktokclone/tinder_swipe/swipe_functions/swipe_alert_function.dart';
 import 'package:tiktokclone/tinder_swipe/swipe_utils/swipe_constants.dart';
 import 'package:tiktokclone/tinder_swipe/swipe_widgets/swipe_app_bar.dart';
@@ -24,18 +24,8 @@ class _HomeSwipeState extends State<HomeSwipe> {
   String postId = const Uuid().v1();
   List<String> likedActivities = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  Map<User,bool> howHasUserSwiped = {};
-  Map<User, bool> hasUserSwiped = {};
 
 
-  List<String> likedActivitiesMethod() {
-    return likedActivities;
-
-  }
-
-  void addActivityDataToUser(){
-
-  }
 
 
 
@@ -62,13 +52,7 @@ class _HomeSwipeState extends State<HomeSwipe> {
     _matchEngine = MatchEngine(swipeItems: _swipeItems);
     super.initState();
   }
-  // not used
-  Future<void> getDocument() async {
-    DocumentSnapshot likedActivities =
-        await _firestore.collection("groups").doc("Liked Activities "
-            "${firebaseAuth.currentUser!.uid}").get();
-    print(likedActivities.toString());
-  }
+
 
   @override
   Widget build(BuildContext context) {

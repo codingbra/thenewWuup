@@ -54,6 +54,7 @@ class _GroupActivityState extends State<GroupActivity> {
   final List<String> friendsChosenUid = [];
   final List<String> votedForReal = [];
   List<String> likedActivities = [];
+  List<String> activityCounter = [];
   Map activityLikeMap = {};
 
   final SwipeSearchController swipeSearchController =
@@ -113,7 +114,8 @@ class _GroupActivityState extends State<GroupActivity> {
         friendsChosenUid,
         hasVoted,
         chosenActivities,
-        votedForReal
+        votedForReal,
+        activityCounter
     );
   }
 
@@ -364,13 +366,6 @@ class _GroupActivityState extends State<GroupActivity> {
 class ConfirmationScreen extends StatelessWidget {
   final uid = FirebaseAuth.instance.currentUser!.uid;
 
-  Future<String> getThemLikes() async {
-    DocumentSnapshot likedActivities = await FirebaseFirestore.instance
-        .collection("groups")
-        .doc("Liked Activities ${firebaseAuth.currentUser!.uid}")
-        .get();
-    return likedActivities.toString();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -422,7 +417,7 @@ class ConfirmationScreen extends StatelessWidget {
                                 groups["date"] +
                                 "\ntogether with: " +
                                 groups['friends'].toString() +
-                                "\nwith the following preferences: ${groups["chosenActivities"]} ",
+                                "\nwith the following preferences: ${groups["chosenActivities"]}  +  ${groups.id}  ",
                             style: TextStyle(fontSize: 20, color: Colors.amber),
                           ),
                         ),

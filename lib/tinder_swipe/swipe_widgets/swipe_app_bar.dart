@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiktokclone/poll_app/poll_app_main.dart';
-import 'package:tiktokclone/tinder_swipe/group_activity.dart';
+import 'package:tiktokclone/tinder_swipe/create_group_activity.dart';
 import 'package:tiktokclone/tinder_swipe/swipe_widgets/buttom_widget.dart';
 import 'package:tiktokclone/tinder_swipe/swipe_widgets/image_widget.dart';
 

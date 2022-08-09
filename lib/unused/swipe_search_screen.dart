@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:tiktokclone/controllers/search_controller.dart';
 import 'package:tiktokclone/models/user.dart';
-import 'package:tiktokclone/tinder_swipe/group_activity.dart';
+import 'package:tiktokclone/tinder_swipe/create_group_activity.dart';
 import 'package:tiktokclone/views/screens/profile_screen.dart';
 
 

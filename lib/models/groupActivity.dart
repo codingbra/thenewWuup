@@ -13,7 +13,8 @@ class GroupActivityPackage{
   final List<String> friendsChosenUid;
   final String hasVoted;
   final List<String> chosenActivities;
-  final List<String> votedForReal;
+  final List<String> hasVotedForReal;
+  final List<String> activityCounter;
 
 
 
@@ -34,7 +35,8 @@ class GroupActivityPackage{
     required this.friendsChosenUid,
     required this.hasVoted,
     required this.chosenActivities,
-    required this.votedForReal,
+    required this.hasVotedForReal,
+    required this.activityCounter,
 
 
 
@@ -51,7 +53,8 @@ class GroupActivityPackage{
     "friendsChosenUid" : friendsChosenUid,
     "hasVoted" : hasVoted,
     "chosenActivities" : chosenActivities,
-    "hasVotedForReal" :votedForReal
+    "hasVotedForReal" :hasVotedForReal,
+    "activityCounter" : activityCounter,
   };
 
   static GroupActivityPackage fromSnap(DocumentSnapshot snap) {
@@ -67,7 +70,8 @@ class GroupActivityPackage{
         chosenActivities: snapshot["chosenActivities"],
         hasVoted: snapshot["hasVoted"],
         friendsChosenUid: snapshot["friendsChosenUid"],
-        votedForReal: snapshot["hasVotedForReal"]
+        hasVotedForReal: snapshot["hasVotedForReal"],
+        activityCounter: ["activityCounter"]
     );
   }
 }
