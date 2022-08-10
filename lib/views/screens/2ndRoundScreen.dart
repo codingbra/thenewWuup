@@ -22,7 +22,7 @@ class SecondRoundScreen extends StatefulWidget {
   final List<dynamic> hasVoted;
   final String nameOfAcivitiy;
   final List<dynamic> secondRoundActivities;
-  final List<dynamic> secondRoundVotes;
+  final List<dynamic> hasVotedInSecondRound;
   final String secondRoundFinalActivity;
 
   const SecondRoundScreen(
@@ -33,7 +33,8 @@ class SecondRoundScreen extends StatefulWidget {
       required this.hasVoted,
       required this.nameOfAcivitiy,
       required this.secondRoundActivities,
-      required this.secondRoundVotes, required this.secondRoundFinalActivity
+      required this.hasVotedInSecondRound,
+        required this.secondRoundFinalActivity
       });
 
   @override
@@ -54,8 +55,9 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  late List<dynamic> hasVotedInSecondRound = widget.secondRoundVotes;
+  late List<dynamic> secondRoundVotes = widget.hasVotedInSecondRound;
   late List<dynamic> activitiesOfSecondRound = widget.secondRoundActivities;
+  late String finalActivity = widget.secondRoundFinalActivity;
 
   T getRandomElement<T>(List<T> list) {
     final random = new Random();
@@ -86,7 +88,7 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
   final List<SwipeItem> _swipeItems = <SwipeItem>[];
   MatchEngine? _matchEngine;
 
-  late String finalActivity = widget.secondRoundFinalActivity;
+
   late bool doesExist = true;
 
 
@@ -120,6 +122,7 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
 
     print("from the last screen : ${widget.secondRoundFinalActivity}");
     print("this is the new activity from last time $finalActivity");
+    print("this is the current user: ${firebaseAuth.currentUser!.uid}");
 
     // CollectionReference secondRoundActivityConfirmation = firestore.collection("groups");
     // var doc = secondRoundActivityConfirmation.doc(widget.activitiyUid).collection("secondRoundMainActivity").get();
@@ -261,7 +264,7 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
       }
     }
 
-    checkFor2ndRoundActivity();
+
     _matchEngine = MatchEngine(swipeItems: _swipeItems);
     super.initState();
   }
@@ -371,16 +374,16 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
                             );
                           },
                           onStackFinished: () {
-                            hasVotedInSecondRound
+                            secondRoundVotes
                                 .add(firebaseAuth.currentUser!.uid);
                             print(
-                                "these are the people that have voted $hasVotedInSecondRound");
+                                "these are the people that have voted $secondRoundVotes");
                             print(
                                 "names on stack finished: $activitiesOfSecondRound");
                             firestoreMethods.addSecondRoundVoting(
                                 widget.activitiyUid,
                                 activitiesOfSecondRound,
-                                hasVotedInSecondRound,
+                                secondRoundVotes,
                                 finalActivity);
                             return ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -425,12 +428,13 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
                             );
                           },
                           onStackFinished: () {
-                            hasVotedInSecondRound
+                            secondRoundVotes
                                 .add(firebaseAuth.currentUser!.uid);
+                            print("these are the mfs that have voted in snd round $secondRoundVotes");
                             firestoreMethods.addSecondRoundVoting(
                                 widget.activitiyUid,
                                 activitiesOfSecondRound,
-                                hasVotedInSecondRound,
+                                secondRoundVotes,
                                 finalActivity);
                             return ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -476,12 +480,12 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
                             );
                           },
                           onStackFinished: () {
-                            hasVotedInSecondRound
+                            secondRoundVotes
                                 .add(firebaseAuth.currentUser!.uid);
                             firestoreMethods.addSecondRoundVoting(
                                 widget.activitiyUid,
                                 activitiesOfSecondRound,
-                                hasVotedInSecondRound,
+                                secondRoundVotes,
                                 finalActivity);
                             return ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -525,12 +529,12 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
                             );
                           },
                           onStackFinished: () {
-                            hasVotedInSecondRound
+                            secondRoundVotes
                                 .add(firebaseAuth.currentUser!.uid);
                             firestoreMethods.addSecondRoundVoting(
                                 widget.activitiyUid,
                                 activitiesOfSecondRound,
-                                hasVotedInSecondRound,
+                                secondRoundVotes,
                                 finalActivity);
                             return ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -576,12 +580,15 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
                             );
                           },
                           onStackFinished: () {
-                            hasVotedInSecondRound
+                            print("this is the final activity on stack finished $finalActivity");
+                            secondRoundVotes
                                 .add(firebaseAuth.currentUser!.uid);
+                            print("these are the mfs that have voted in snd round $secondRoundVotes");
+                            print("this is the current user: ${firebaseAuth.currentUser!.uid}");
                             firestoreMethods.addSecondRoundVoting(
                                 widget.activitiyUid,
                                 activitiesOfSecondRound,
-                                hasVotedInSecondRound,
+                                secondRoundVotes,
                                 finalActivity);
                             Navigator.of(context).push(MaterialPageRoute(
                               builder: (context) => const FinalActivityScreen(),

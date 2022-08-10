@@ -394,7 +394,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                             nameOfAcivitiy: groups["groupName"],
                                             secondRoundActivities:
                                                 groups["secondRoundActivities"],
-                                                secondRoundVotes: groups["hasVotedInSecondRound"],
+                                                  hasVotedInSecondRound: groups["hasVotedInSecondRound"],
                                                   secondRoundFinalActivity: groups["secondRoundMainActivity"]
                                           ),
                                           // here the pre selected sample should be shown.
@@ -503,7 +503,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                           nameOfAcivitiy: groups["groupName"],
                                           secondRoundActivities:
                                           groups["secondRoundActivities"],
-                                          secondRoundVotes: ["hasVotedInSecondRound"],
+                                            hasVotedInSecondRound: groups["hasVotedInSecondRound"],
                                             secondRoundFinalActivity: groups["secondRoundMainActivity"]
                                         ),
                                         // here the pre selected sample should be shown.

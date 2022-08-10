@@ -19,7 +19,13 @@ class SwipeActivityScreen extends StatefulWidget {
   final List<dynamic> hasVoted;
   final String nameOfAcivitiy;
 
-  SwipeActivityScreen({super.key, required this.activitiyUid, required this.activities, required this.baseActivities, required this.hasVoted, required this.nameOfAcivitiy});
+  SwipeActivityScreen(
+      {super.key,
+      required this.activitiyUid,
+      required this.activities,
+      required this.baseActivities,
+      required this.hasVoted,
+      required this.nameOfAcivitiy});
 
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -27,10 +33,7 @@ class SwipeActivityScreen extends StatefulWidget {
   State<SwipeActivityScreen> createState() => _SwipeActivityScreenState();
 }
 
-
-
 class _SwipeActivityScreenState extends State<SwipeActivityScreen> {
-
   final List<SwipeItem> _swipeItems = <SwipeItem>[];
   FirestoreMethods firestoreMethods = FirestoreMethods();
 
@@ -50,16 +53,33 @@ class _SwipeActivityScreenState extends State<SwipeActivityScreen> {
  // final SwipeSearchController swipeSearchController =
   //Get.put(SwipeSearchController());
 
+  List <String> imagesChosen = [];
+
+ late int index = 0;
+  List<dynamic> indexList = [];
+
   @override
   void initState()  {
-    int counter = 0;
+
+
+    for(var item in widget.activities){
+      for(var imageItem in images){
+        if(imageItem.toString().contains(item)){
+          imagesChosen.add(imageItem);
+          print("These are the chosen images $imagesChosen");
+
+        }
+      }
+    }
+
+     int counter = 0;
     for (int i = 0; i < names.length; i++) {
       _swipeItems.add(SwipeItem(
         content: Content(text: names[i]),
-
         likeAction: () {
           actions(context, names[i], "Liked");
           chosenActivities.add(names[i]);
+
           print("as of now these are the activities$chosenActivities");
         }, // update database
         nopeAction: () {
@@ -130,47 +150,59 @@ class _SwipeActivityScreenState extends State<SwipeActivityScreen> {
 
 
                           itemBuilder: (BuildContext context, int index) {
-                            int index = 0;
-                            List<dynamic> indexList = [];
-                            // for(var item in widget.activities){
-                            //   for(var imageItem in images){
-                            //     if(imageItem.toString().contains(item)){
+                            // int index = 0;
                             //
+                            // // for(var item in widget.activities){
+                            // //   for(var imageItem in images){
+                            // //     if(imageItem.toString().contains(item)){
+                            // //
+                            // //     }
+                            // //   }
+                            // // }
+                            //
+                            // for(int i = 0; i<images.length; i++){
+                            //   for(int j = 0; j<widget.activities.length; j++){
+                            //     if(images[i].toString().contains(widget.activities[j])){
+                            //       index = i;
                             //     }
                             //   }
+                            //
+                            //   print("this is the indexlist : $indexList");
                             // }
+                            //
+                            // for(var item in indexList){
+                            //   index = item;
+                            // }
+                            // print("this is the index: $index");
 
-                            for(int i = 0; i<images.length; i++){
-                              for(int j = 0; j<widget.activities.length; j++){
-                                if(images[i].toString().contains(widget.activities[j])){
-                                  indexList = [i];
 
-                                }
 
-                              }
-                              print(indexList);
-                            }
 
-                            for(var item in indexList){
-                              index = item;
-                            }
+
 
 
                             return Container(
-
-                              alignment: Alignment.bottomLeft,
+                             alignment: Alignment.bottomLeft,
                               decoration: BoxDecoration(
                                  image: DecorationImage(
-                                   image: AssetImage(images[index]),
+                                   image: AssetImage(
+                                       imagesChosen[index]),
                                    fit: BoxFit.cover,
                                 ),
-                                color: Colors.red,
+                                color: Colors.black,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               padding: const EdgeInsets.all(20),
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
+                                  Text(
+                                    names[index],
+                                    style: TextStyle(
+                                        fontSize: 32,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  )
                                 ],
                               ),
                             );
@@ -180,6 +212,7 @@ class _SwipeActivityScreenState extends State<SwipeActivityScreen> {
                             print("these are the people that have voted $hasVoted");
                             print("names on stack finished: $chosenActivities");
                             firestoreMethods.addActivities(widget.activitiyUid, chosenActivities, hasVoted);
+                            print("These are the chosen images $imagesChosen");
                             return ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(

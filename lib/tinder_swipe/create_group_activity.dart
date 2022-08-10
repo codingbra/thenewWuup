@@ -1,6 +1,3 @@
-
-
-
 import 'dart:collection';
 import 'dart:core';
 
@@ -56,9 +53,12 @@ class _GroupActivityState extends State<GroupActivity> {
   List<String> likedActivities = [];
   List<String> activityCounter = [];
   Map activityLikeMap = {};
+  List<String> secondRoundActivities = [];
+  List<String> hasVotedInSecondRound = [];
+  String secondRoundMainActivity = "";
 
   final SwipeSearchController swipeSearchController =
-      Get.put(SwipeSearchController());
+  Get.put(SwipeSearchController());
   final ProfileController profileController = Get.put((ProfileController()));
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final String groupId = "";
@@ -85,13 +85,13 @@ class _GroupActivityState extends State<GroupActivity> {
       _isLoading = true;
     });
 
-    void addHasPosted() async{
+    void addHasPosted() async {
 
     }
 
     String uid = firebaseAuth.currentUser!.uid;
     DocumentSnapshot userDoc =
-        await firestore.collection('users').doc(uid).get();
+    await firestore.collection('users').doc(uid).get();
     String name = (userDoc.data()! as Map<String, dynamic>)['name'];
     String hasVoted = (userDoc.data()! as Map<String, dynamic>)['uid'];
 
@@ -115,7 +115,11 @@ class _GroupActivityState extends State<GroupActivity> {
         hasVoted,
         chosenActivities,
         votedForReal,
-        activityCounter
+        activityCounter,
+        secondRoundActivities,
+        hasVotedInSecondRound,
+        secondRoundMainActivity
+
     );
   }
 
@@ -171,7 +175,7 @@ class _GroupActivityState extends State<GroupActivity> {
   @override
   Widget build(BuildContext context) {
     CollectionReference groups =
-        FirebaseFirestore.instance.collection('groups');
+    FirebaseFirestore.instance.collection('groups');
 
     return Scaffold(
       appBar: AppBar(
@@ -227,23 +231,23 @@ class _GroupActivityState extends State<GroupActivity> {
                           height: 120,
                           child: ListView.builder(
                               itemCount:
-                                  swipeSearchController.searchedUsers.length,
+                              swipeSearchController.searchedUsers.length,
                               itemBuilder: (context, index) {
                                 model.User user =
-                                    swipeSearchController.searchedUsers[index];
+                                swipeSearchController.searchedUsers[index];
                                 return InkWell(
                                   onTap: () async {
                                     if (friendsChosen.contains(user.name)) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content:
-                                                  Text("already in group")));
+                                          content:
+                                          Text("already in group")));
                                     } else if (user.uid ==
                                         firebaseAuth.currentUser!.uid) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  "You cannot add yourself you stupid fuck")));
+                                          content: Text(
+                                              "You cannot add yourself you stupid fuck")));
                                     } else {
                                       friendsChosen.add(user.name);
                                       print(friendsChosen);
@@ -371,7 +375,7 @@ class ConfirmationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Referenz festlegen - hier gruppen
     CollectionReference groups =
-        FirebaseFirestore.instance.collection('groups');
+    FirebaseFirestore.instance.collection('groups');
 
     return Scaffold(
       appBar: AppBar(
@@ -382,13 +386,13 @@ class ConfirmationScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context) // here you can go back to the hommescreen
                     .push(
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                    MaterialPageRoute(builder: (context) => HomeScreen()));
               },
               icon: Icon(Icons.home)),
         ],
       ),
       body: StreamBuilder(
-          // groups = collection reference as defined above
+        // groups = collection reference as defined above
           stream: groups.orderBy('datePublished', descending: true).snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -417,7 +421,8 @@ class ConfirmationScreen extends StatelessWidget {
                                 groups["date"] +
                                 "\ntogether with: " +
                                 groups['friends'].toString() +
-                                "\nwith the following preferences: ${groups["chosenActivities"]}  +  ${groups.id}  ",
+                                "\nwith the following preferences: ${groups["chosenActivities"]}  +  ${groups
+                                    .id}  ",
                             style: TextStyle(fontSize: 20, color: Colors.amber),
                           ),
                         ),
