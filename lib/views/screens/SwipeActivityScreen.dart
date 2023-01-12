@@ -49,6 +49,7 @@ class _SwipeActivityScreenState extends State<SwipeActivityScreen> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 
+
   late List<dynamic> names = widget.activities;
  // final SwipeSearchController swipeSearchController =
   //Get.put(SwipeSearchController());
@@ -79,7 +80,6 @@ class _SwipeActivityScreenState extends State<SwipeActivityScreen> {
         likeAction: () {
           actions(context, names[i], "Liked");
           chosenActivities.add(names[i]);
-
           print("as of now these are the activities$chosenActivities");
         }, // update database
         nopeAction: () {

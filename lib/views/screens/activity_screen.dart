@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +12,9 @@ import 'package:tiktokclone/models/user.dart' as model;
 import 'package:tiktokclone/views/screens/profile_screen.dart';
 
 import '2ndRoundScreen.dart';
+import 'finalResultScreenWUUP.dart';
 
 class ActivityScreen extends StatefulWidget {
-
 
 
   @override
@@ -28,9 +26,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
   final uid = FirebaseAuth.instance.currentUser!.uid;
   late DocumentSnapshot documentSnapshotPic;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final newActivity = <String, dynamic>{"chosenActivities" : ["asdfgads", "sdafsdgsadfgdasdf"]};
+  final newActivity = <String, dynamic>{
+    "chosenActivities": ["asdfgads", "sdafsdgsadfgdasdf"]
+  };
   CollectionReference groups =
   FirebaseFirestore.instance.collection('groups');
+
   //final User user = User as User;
   ProfileController profileController = ProfileController();
 
@@ -40,10 +41,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
   late final String activityForSecond;
 
 
-
   Future<String> checkFor2ndRoundActivity() async {
-
-
     await FirebaseFirestore.instance
         .collection('groups')
         .doc(documentId)
@@ -57,14 +55,12 @@ class _ActivityScreenState extends State<ActivityScreen> {
         // }
         activityForSecond = secondRoundActivity;
         print("these are the user that have voted ${activityForSecond}");
-
       } else {
         print('Document does not exist on the database');
       }
     });
     return activityForSecond;
   }
-
 
 
   Future<String> getThemLikes() async {
@@ -87,7 +83,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
 
-
   dynamic data;
 
   Future<dynamic> getData() async {
@@ -103,15 +98,15 @@ class _ActivityScreenState extends State<ActivityScreen> {
   }
 
 
-  Future<bool> CheckWhetherAllVoted()async{
-
+  Future<bool> CheckWhetherAllVoted() async {
     await FirebaseFirestore.instance
         .collection('groups')
         .doc(groups.id)
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
-        List<dynamic> nested = documentSnapshot.get(FieldPath(["hasVotedForReal"]));
+        List<dynamic> nested = documentSnapshot.get(
+            FieldPath(["hasVotedForReal"]));
         // for(var elements in nested) {
         //   chosenActivities.add(elements);
         // }
@@ -129,7 +124,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
-        List<dynamic> nested = documentSnapshot.get(FieldPath(["friendsChosenUid"]));
+        List<dynamic> nested = documentSnapshot.get(
+            FieldPath(["friendsChosenUid"]));
         // for(var elements in nested) {
         //   chosenActivities.add(elements);
         // }
@@ -141,12 +137,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
       }
     });
 
-    if(theseAreTheFriendsInvited.length == theseAreTheUsersThatVoted.length) {
+    if (theseAreTheFriendsInvited.length == theseAreTheUsersThatVoted.length) {
       return true;
     } else {
       return false;
     }
-
   }
 
 
@@ -167,9 +162,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     CheckWhetherAllVoted();
-  print(CheckWhetherAllVoted());
+    print(CheckWhetherAllVoted());
 
 
     DocumentReference chosenActivties = FirebaseFirestore.instance
@@ -189,7 +183,8 @@ class _ActivityScreenState extends State<ActivityScreen> {
         .get()
         .then((DocumentSnapshot documentSnapshot) {
       if (documentSnapshot.exists) {
-        List<dynamic> nested = documentSnapshot.get(FieldPath(["hasVotedForReal"]));
+        List<dynamic> nested = documentSnapshot.get(
+            FieldPath(["hasVotedForReal"]));
         // for(var elements in nested) {
         //   chosenActivities.add(elements);
         // }
@@ -204,9 +199,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
     Map<String, int> count = {};
     List<dynamic> counterOfActivities = [];
-
-
-
 
 
     // List<dynamic> listNames = [];
@@ -233,7 +225,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     //
 
 
-
     return Scaffold(
       appBar: AppBar(
 
@@ -248,7 +239,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
       ),
       // in the stream builder we read data from the database
       body: StreamBuilder(
-          //stream: FirebaseFirestore.instance.collection('groups').snapshots(),
+        //stream: FirebaseFirestore.instance.collection('groups').snapshots(),
           stream: groups.orderBy('datePublished', descending: true).snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -264,119 +255,111 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
                 List<dynamic> listNames = [];
                 List<dynamic> friendsUids = [];
+                List<dynamic> friendsVotedIn2ndRound = [];
 
 
-                for(var items in groups["hasVotedForReal"]) {
-                  listNames.add(items);}
-                for(var items in groups["friendsChosenUid"]) {
-                  friendsUids.add(items);}
+                for (var items in groups["hasVotedForReal"]) {
+                  listNames.add(items);
+                }
+                for (var items in groups["friendsChosenUid"]) {
+                  friendsUids.add(items);
+                }
+                for (var items in groups["hasVotedInSecondRound"]) {
+                  friendsVotedIn2ndRound.add(items);
+                }
 
 
                 return Column(
                   children: [
 
 
+//////////////////////////////////////// CASE ALL HAVE DECIDED IN 2ND ROUND:////////////////////////////////////////////////// ///////////////////////// ///////////////////////// /////////////////////////
+                    for (var item in groups["friendsChosenUid"])
+                      if(listNames.length == friendsVotedIn2ndRound.length)
+                      // case I have been invited:
+                        if(item == FirebaseAuth.instance.currentUser!.uid)
+                          Card(
+                            color: Colors.white,
+                            elevation: 12,
+                            child: ListTile(
+                              leading:
+                              SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Text("Creator: ${groups["username"]}",style: TextStyle(color: Colors.black)),
+                                    Container(
+                                      child: FutureBuilder<DocumentSnapshot>(
+                                        future: users.doc(groups["uid"]).get(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<DocumentSnapshot>
+                                            snapshot) {
+                                          if (snapshot.hasError) {
+                                            return Text("Something went wrong");
+                                          }
 
-
-
-
-
-
-//////////////////////////////////////// CASE ALL HAVE DECIDED ON ACTIVITY////////////////////////////////////////////////// ///////////////////////// ///////////////////////// /////////////////////////
-                   for (var item in groups["friendsChosenUid"])
-                   if( listNames.length == friendsUids.length+1)
-                   // case I have been invited:
-                     if(item == FirebaseAuth.instance.currentUser!.uid)
-                     Card(
-                       color: Colors.blueGrey,
-
-                       elevation: 12,
-                       child: ListTile(
-                         leading:
-                         SingleChildScrollView(
-                           child: Column(
-                             mainAxisAlignment: MainAxisAlignment.center,
-                             mainAxisSize: MainAxisSize.max,
-                             children: [
-                               Text("Creator: ${groups["username"]}"),
-                               Container(
-
-                                 child: FutureBuilder<DocumentSnapshot>(
-                                   future: users.doc(groups["uid"]).get(),
-                                   builder: (BuildContext context,
-                                       AsyncSnapshot<DocumentSnapshot>
-                                       snapshot) {
-                                     if (snapshot.hasError) {
-                                       return Text("Something went wrong");
-                                     }
-
-                                     if (snapshot.hasData &&
-                                         !snapshot.data!.exists) {
-                                       return Text(
-                                           "Document does not exist");
-                                     }
-                                     if (snapshot.connectionState ==
-                                         ConnectionState.done) {
-                                       Map<String, dynamic> data =
-                                       snapshot.data!.data()
-                                       as Map<String, dynamic>;
-                                       return Column(
-                                         children: [
-                                           InkWell(
-                                             onTap: () =>
-                                                 Navigator.of(context)
-                                                     .push(MaterialPageRoute(
-                                                   builder: (context) =>
-                                                       ProfileScreen(
-                                                         uid: data["uid"],
-                                                       ),
-                                                 )
-                                                 ),
-                                             child: CircleAvatar(
-                                                 foregroundImage:
-                                                 NetworkImage(
-                                                   data["profilePhoto"]
-                                                       .toString(),
-                                                   //Image.network(data["profilePhoto"])
-                                                 ) //;
-                                             ),
-                                           ),
-                                         ],
-                                       );
-                                       // return Image.network(data["profilePhoto"]);
-                                       //return Text("Full Name: ${data['profilePhoto']} ${data['name']}");
-                                     }
-                                     return Text("loading");
-                                   },
-                                 ),
-                               ),
-                             ],
-                           ),
-                         ),
-                         title: Column(
-                           children: [
-                             Text(
-                               "${groups["username"]} : ${stamp.toDate()} :" +
-                                   "\n\nYour Activity is called: " +
-                                   groups['groupName'] +
-                                   "\n\n the activity will take place on the: " +
-                                   groups["date"] +
-                                   "\n\ntogether with: " +
-                                   groups['friends'].toString() +
-                                   "\n\nwith the following preferences: ${groups["chosenActivities"]} "
-                                   + "\n\n The Chosen Acivities were: : ${groups["activityCounter"]}"
-                                   + "\n\nThe Voting on this activity is closed. Please proceed to the second round via the button below",
-                               style: TextStyle(
-                                   fontSize: 20, color: Colors.amber),
-                             ),
-                             Container(
-                               child: ElevatedButton(
-                                 style: ElevatedButton.styleFrom(primary: Colors.green),
-                                 onPressed: () {
-                                   // if (groups["hasVoted"]==firebaseAuth.currentUser!.uid) {
-                                   //   ScaffoldMessenger.of(context)
-                                   //       .showSnackBar(SnackBar(
-                                   //       content: Text(
+                                          if (snapshot.hasData &&
+                                              !snapshot.data!.exists) {
+                                            return Text(
+                                                "Document does not exist");
+                                          }
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.done) {
+                                            Map<String, dynamic> data =
+                                            snapshot.data!.data()
+                                            as Map<String, dynamic>;
+                                            return Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () =>
+                                                      Navigator.of(context)
+                                                          .push(
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                                context) =>
+                                                                ProfileScreen(
+                                                                  uid: data["uid"],
+                                                                ),
+                                                          )
+                                                      ),
+                                                  child: CircleAvatar(
+                                                      foregroundImage:
+                                                      NetworkImage(
+                                                        data["profilePhoto"]
+                                                            .toString(),
+                                                        //Image.network(data["profilePhoto"])
+                                                      ) //;
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                            // return Image.network(data["profilePhoto"]);
+                                            //return Text("Full Name: ${data['profilePhoto']} ${data['name']}");
+                                          }
+                                          return Text("loading");
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              title: Column(
+                                children: [
+                                  Text( "${stamp.toDate()} :",style: TextStyle(color: Colors.black)),
+                                  Text("\n\n${groups['groupName']} ",
+                                      style: TextStyle(
+                                          fontSize: 30, color: Colors.amber)),
+                                  SizedBox(height: 20,),
+                                  Container(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.black),
+                                      onPressed: () {
+                                        // if (groups["hasVoted"]==firebaseAuth.currentUser!.uid) {
+                                        //   ScaffoldMessenger.of(context)
+                                        //       .showSnackBar(SnackBar(
+                                        //       content: Text(
                                         //           "You have already voted on this activity")));
                                         //
                                         // } else {
@@ -384,35 +367,401 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                         Navigator.of(context)
                                             .push(MaterialPageRoute(
                                           builder: (context) =>
-                                              SecondRoundScreen(
-                                            activitiyUid: groups.id,
-                                            activities:
-                                                groups["chosenActivities"],
-                                            baseActivities:
-                                                groups["activityCounter"],
-                                            hasVoted: groups["hasVotedForReal"],
-                                            nameOfAcivitiy: groups["groupName"],
-                                            secondRoundActivities:
-                                                groups["secondRoundActivities"],
+                                              FinalScreen(
+                                                  activitiyUid: groups.id,
+                                                  activities:
+                                                  groups["chosenActivities"],
+                                                  baseActivities:
+                                                  groups["activityCounter"],
+                                                  hasVoted: groups["hasVotedForReal"],
+                                                  nameOfAcivitiy: groups["groupName"],
+                                                  secondRoundActivities:
+                                                  groups["secondRoundActivities"],
                                                   hasVotedInSecondRound: groups["hasVotedInSecondRound"],
-                                                  secondRoundFinalActivity: groups["secondRoundMainActivity"]
-                                          ),
+                                                  secondRoundFinalActivity: groups["secondRoundMainActivity"],
+                                                  location: groups["location"],
+                                                  time: groups["date"],
+                                                sndRoundActivities : groups["secondRoundActivities"],
+                                                  mostFinalActivity : groups["mostFinalActivity"]
+                                              ),
                                           // here the pre selected sample should be shown.
                                         ));
                                       },
+                                      child: Text("Click to see result"),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                    // case I have created:
+                    if(listNames.length == friendsVotedIn2ndRound.length)
+                      if(groups["uid"] ==
+                          FirebaseAuth.instance.currentUser!.uid)
+                        Card(
+                          color: Colors.white,
+                          elevation: 12,
+                          child: ListTile(
+                            leading:
+                            SingleChildScrollView(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text("Creator: ${groups["username"]}",style: TextStyle(color: Colors.black),),
+                                  Container(
+                                    child: FutureBuilder<DocumentSnapshot>(
+                                      future: users
+                                          .doc(firebaseAuth.currentUser!.uid)
+                                          .get(),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<DocumentSnapshot>
+                                          snapshot) {
+                                        if (snapshot.hasError) {
+                                          return Text("Something went wrong");
+                                        }
+
+                                        if (snapshot.hasData &&
+                                            !snapshot.data!.exists) {
+                                          return Text(
+                                              "Document does not exist");
+                                        }
+
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.done) {
+                                          Map<String, dynamic> data =
+                                          snapshot.data!.data()
+                                          as Map<String, dynamic>;
+                                          return CircleAvatar(
+
+                                              foregroundImage: NetworkImage(
+                                                data["profilePhoto"].toString(),
+                                                //Image.network(data["profilePhoto"])
+                                              ) //;
+                                          );
+                                          // return Image.network(data["profilePhoto"]);
+                                          //return Text("Full Name: ${data['profilePhoto']} ${data['name']}");
+                                        }
+                                        return Text("loading");
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            title: Column(
+                              children: [
+                                Text( "${stamp.toDate()} :", style: TextStyle(color: Colors.black),),
+                                Text("\n\n${groups['groupName']} ",
+                                  style: TextStyle(
+                                      fontSize: 30, color: Colors.amber)),
+                                SizedBox(height: 20,),
+                                Container(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.black),
+                                    onPressed: () {
+                                      // if (groups["hasVoted"]==firebaseAuth.currentUser!.uid) {
+                                      //   ScaffoldMessenger.of(context)
+                                      //       .showSnackBar(SnackBar(
+                                      //       content: Text(
+                                      //           "You have already voted on this activity")));
+                                      //
+                                      // } else {
+                                      print(groups.id);
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => FinalScreen(
+                                          activitiyUid: groups.id,
+                                          activities:
+                                              groups["chosenActivities"],
+                                          baseActivities:
+                                              groups["activityCounter"],
+                                          hasVoted: groups["hasVotedForReal"],
+                                          nameOfAcivitiy: groups["groupName"],
+                                          secondRoundActivities:
+                                              groups["secondRoundActivities"],
+                                          hasVotedInSecondRound:
+                                              groups["hasVotedInSecondRound"],
+                                          secondRoundFinalActivity:
+                                              groups["secondRoundMainActivity"],
+                                          location: groups["location"],
+                                          time: groups["date"],
+                                            sndRoundActivities : groups["secondRoundActivities"],
+                                          mostFinalActivity : groups["mostFinalActivity"]
+
+                                        ),
+                                        // here the pre selected sample should be shown.
+                                      ));
+                                    },
+                                    child: Text("Click to see result"),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+
+//////////////////////////////////////// CASE ALL HAVE DECIDED ON ACTIVITY////////////////////////////////////////////////// ///////////////////////// ///////////////////////// /////////////////////////
+                    for (var item in groups["friendsChosenUid"])
+                      if( listNames.length == friendsUids.length + 1 &&
+                          listNames.length != friendsVotedIn2ndRound.length)
+                      // case I have been invited:
+                        if(item == FirebaseAuth.instance.currentUser!.uid)
+                          Card(
+                            color: Colors.blueGrey,
+                            elevation: 12,
+                            child: ListTile(
+                              leading:
+                              SingleChildScrollView(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Text("Creator: ${groups["username"]}"),
+                                    Container(
+                                      child: FutureBuilder<DocumentSnapshot>(
+                                        future: users.doc(groups["uid"]).get(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<DocumentSnapshot>
+                                            snapshot) {
+                                          if (snapshot.hasError) {
+                                            return Text("Something went wrong");
+                                          }
+
+                                          if (snapshot.hasData &&
+                                              !snapshot.data!.exists) {
+                                            return Text(
+                                                "Document does not exist");
+                                          }
+                                          if (snapshot.connectionState ==
+                                              ConnectionState.done) {
+                                            Map<String, dynamic> data =
+                                            snapshot.data!.data()
+                                            as Map<String, dynamic>;
+                                            return Column(
+                                              children: [
+                                                InkWell(
+                                                  onTap: () =>
+                                                      Navigator.of(context)
+                                                          .push(
+                                                          MaterialPageRoute(
+                                                            builder: (
+                                                                context) =>
+                                                                ProfileScreen(
+                                                                  uid: data["uid"],
+                                                                ),
+                                                          )
+                                                      ),
+                                                  child: CircleAvatar(
+                                                      foregroundImage:
+                                                      NetworkImage(
+                                                        data["profilePhoto"]
+                                                            .toString(),
+                                                        //Image.network(data["profilePhoto"])
+                                                      ) //;
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                            // return Image.network(data["profilePhoto"]);
+                                            //return Text("Full Name: ${data['profilePhoto']} ${data['name']}");
+                                          }
+                                          return Text("loading");
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              title: Column(
+                                children: [
+                                  Text(
+                                    "${groups["username"]} : ${stamp
+                                        .toDate()} :" +
+                                        "\n\nYour Activity is called: " +
+                                        groups['groupName'] +
+                                        "\n\n the activity will take place on the: " +
+                                        groups["date"] +
+                                        "\n\ntogether with: " +
+                                        groups['friends'].toString() +
+                                        "\n\nwith the following preferences: ${groups["chosenActivities"]} "
+                                        +
+                                        "\n\n The Chosen Acivities were: : ${groups["activityCounter"]}"
+                                        +
+                                        "\n\nThe Voting on this activity is closed. Please proceed to the second round via the button below",
+                                    style: TextStyle(
+                                        fontSize: 20, color: Colors.amber),
+                                  ),
+                                  Container(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          primary: Colors.green),
+                                      onPressed: () {
+
+                                        List<dynamic> listOfPeopleInSndRound = [];
+                                        for(var items in groups["hasVotedInSecondRound"]){
+                                          listOfPeopleInSndRound.add(items);
+                                        }
+                                        if(listOfPeopleInSndRound.contains(firebaseAuth.currentUser!.uid)){
+
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  "You have already voted on this activity")));
+                                        }
+                                     else {
+                                        print(groups.id);
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              SecondRoundScreen(
+                                                  activitiyUid: groups.id,
+                                                  activities:
+                                                  groups["chosenActivities"],
+                                                  baseActivities:
+                                                  groups["activityCounter"],
+                                                  hasVoted: groups["hasVotedForReal"],
+                                                  nameOfAcivitiy: groups["groupName"],
+                                                  secondRoundActivities:
+                                                  groups["secondRoundActivities"],
+                                                  hasVotedInSecondRound: groups["hasVotedInSecondRound"],
+                                                  secondRoundFinalActivity: groups["secondRoundMainActivity"]
+                                              ),
+                                          // here the pre selected sample should be shown.
+                                        ));
+                                      }
+                                         },
                                       child: Text("Go to 2nd Round"),
                                     ),
                                   )
                                 ],
-                         ),
-                       ),
-                     ),
+                              ),
+                            ),
+                          ),
                     // case I have created:
-                    if(listNames.length == friendsUids.length+1)
+                    if(listNames.length == friendsUids.length + 1 &&
+                        listNames.length != friendsVotedIn2ndRound.length)
                       if(groups["uid"] ==
                           FirebaseAuth.instance.currentUser!.uid)
+                        Card(
+                          color: Colors.blueGrey,
+                          elevation: 12,
+                          child: ListTile(
+                            leading:
+                            SingleChildScrollView(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text("Creator: ${groups["username"]}"),
+                                  Container(
+                                    child: FutureBuilder<DocumentSnapshot>(
+                                      future: users
+                                          .doc(firebaseAuth.currentUser!.uid)
+                                          .get(),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<DocumentSnapshot>
+                                          snapshot) {
+                                        if (snapshot.hasError) {
+                                          return Text("Something went wrong");
+                                        }
+
+                                        if (snapshot.hasData &&
+                                            !snapshot.data!.exists) {
+                                          return Text(
+                                              "Document does not exist");
+                                        }
+
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.done) {
+                                          Map<String, dynamic> data =
+                                          snapshot.data!.data()
+                                          as Map<String, dynamic>;
+                                          return CircleAvatar(
+
+                                              foregroundImage: NetworkImage(
+                                                data["profilePhoto"].toString(),
+                                                //Image.network(data["profilePhoto"])
+                                              ) //;
+                                          );
+                                          // return Image.network(data["profilePhoto"]);
+                                          //return Text("Full Name: ${data['profilePhoto']} ${data['name']}");
+                                        }
+                                        return Text("loading");
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            title: Column(
+                              children: [
+                                Text(
+                                  "${groups["username"]} : ${stamp
+                                      .toDate()} :" +
+                                      "\n\nYour Activity is called: " +
+                                      groups['groupName'] +
+                                      "\n\n the activity will take place on the: " +
+                                      groups["date"] +
+                                      "\n\ntogether with: " +
+                                      groups['friends'].toString() +
+                                      "\n\nwith the following preferences: ${groups["chosenActivities"]} "
+                                      + "id : ${groups.id}"
+                                      +
+                                      "\n\nThe Voting on this activity is closed. Please proceed to the second round via the button below",
+                                  style: TextStyle(
+                                      fontSize: 20, color: Colors.amber),
+                                ),
+                                Container(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        primary: Colors.green),
+                                    onPressed: () {
+                                      List<dynamic> listOfPeopleInSndRound = [];
+                                      for(var items in groups["hasVotedInSecondRound"]){
+                                        listOfPeopleInSndRound.add(items);
+                                      }
+                                      if(listOfPeopleInSndRound.contains(firebaseAuth.currentUser!.uid)){
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "You have already voted on ${groups["groupName"]}")));
+                                      } else {
+                                        print(groups.id);
+                                        Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (context) =>
+                                              SecondRoundScreen(
+                                                  activitiyUid: groups.id,
+                                                  activities:
+                                                  groups["chosenActivities"],
+                                                  baseActivities:
+                                                  groups["activityCounter"],
+                                                  hasVoted: groups["hasVotedForReal"],
+                                                  nameOfAcivitiy: groups["groupName"],
+                                                  secondRoundActivities:
+                                                  groups["secondRoundActivities"],
+                                                  hasVotedInSecondRound: groups["hasVotedInSecondRound"],
+                                                  secondRoundFinalActivity: groups["secondRoundMainActivity"]
+                                              ),
+                                          // here the pre selected sample should be shown.
+                                        ));
+                                      }},
+                                    child: Text("Go to 2nd Round"),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+
+
+//////////////////////////////////////// CASE YOUR OWN ACTIVITY ///////////////////////// ///////////////////////// ///////////////////////// ///////////////////////// /////////////////////////
+                    if (groups["uid"] ==
+                        FirebaseAuth.instance.currentUser!.uid &&
+                        listNames.length != friendsUids.length + 1)
                       Card(
-                        color: Colors.blueGrey,
                         elevation: 12,
                         child: ListTile(
                           leading:
@@ -421,7 +770,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Text("Creator: ${groups["username"]}"),
+                                Text("You have created"),
                                 Container(
                                   child: FutureBuilder<DocumentSnapshot>(
                                     future: users
@@ -446,7 +795,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                         snapshot.data!.data()
                                         as Map<String, dynamic>;
                                         return CircleAvatar(
-
                                             foregroundImage: NetworkImage(
                                               data["profilePhoto"].toString(),
                                               //Image.network(data["profilePhoto"])
@@ -473,153 +821,43 @@ class _ActivityScreenState extends State<ActivityScreen> {
                                     groups["date"] +
                                     "\n\ntogether with: " +
                                     groups['friends'].toString() +
+                                    groups['friendsChosenUid'].toString() +
                                     "\n\nwith the following preferences: ${groups["chosenActivities"]} "
                                     + "id : ${groups.id}"
-                                    + "\n\nThe Voting on this activity is closed. Please proceed to the second round via the button below",
+
+                                    +
+                                    "\n\nhasVoted: ${groups["hasVotedForReal"]}"
+                                    +
+                                    "\n\n has everybody voted?: ${CheckWhetherAllVoted()}",
                                 style: TextStyle(
                                     fontSize: 20, color: Colors.amber),
                               ),
                               Container(
                                 child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(primary: Colors.green),
                                   onPressed: () {
-                                    // if (groups["hasVoted"]==firebaseAuth.currentUser!.uid) {
-                                    //   ScaffoldMessenger.of(context)
-                                    //       .showSnackBar(SnackBar(
-                                    //       content: Text(
-                                    //           "You have already voted on this activity")));
-                                    //
-                                      // } else {
+                                    if (groups["hasVoted"] ==
+                                        firebaseAuth.currentUser!.uid) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                          content: Text(
+                                              "You have already voted on this activity")));
+                                    } else {
                                       print(groups.id);
                                       Navigator.of(context)
                                           .push(MaterialPageRoute(
-                                        builder: (context) => SecondRoundScreen(
-                                          activitiyUid: groups.id,
-                                          activities:
+                                        builder: (context) =>
+                                            SwipeActivityScreen(
+                                              activitiyUid: groups.id,
+                                              activities:
                                               groups["chosenActivities"],
-                                          baseActivities:
+                                              baseActivities:
                                               groups["activityCounter"],
-                                          hasVoted: groups["hasVotedForReal"],
-                                          nameOfAcivitiy: groups["groupName"],
-                                          secondRoundActivities:
-                                          groups["secondRoundActivities"],
-                                            hasVotedInSecondRound: groups["hasVotedInSecondRound"],
-                                            secondRoundFinalActivity: groups["secondRoundMainActivity"]
-                                        ),
+                                              hasVoted: groups["hasVotedForReal"],
+                                              nameOfAcivitiy: groups["groupName"],
+                                            ),
                                         // here the pre selected sample should be shown.
                                       ));
-                                    },
-                                    child: Text("Go to 2nd Round"),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-
-
-
-
-
-
-
-
-
-
-
-//////////////////////////////////////// CASE YOUR OWN ACTIVITY ///////////////////////// ///////////////////////// ///////////////////////// ///////////////////////// /////////////////////////
-                   if (groups["uid"] ==
-                        FirebaseAuth.instance.currentUser!.uid && listNames.length != friendsUids.length+1)
-                    Card(
-                      elevation: 12,
-                      child: ListTile(
-                        leading:
-                             SingleChildScrollView(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Text("You have created"),
-                                    Container(
-                                      child: FutureBuilder<DocumentSnapshot>(
-                                        future: users
-                                            .doc(firebaseAuth.currentUser!.uid)
-                                            .get(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot<DocumentSnapshot>
-                                                snapshot) {
-                                          if (snapshot.hasError) {
-                                            return Text("Something went wrong");
-                                          }
-
-                                          if (snapshot.hasData &&
-                                              !snapshot.data!.exists) {
-                                            return Text(
-                                                "Document does not exist");
-                                          }
-
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.done) {
-                                            Map<String, dynamic> data =
-                                                snapshot.data!.data()
-                                                    as Map<String, dynamic>;
-                                            return CircleAvatar(
-                                                foregroundImage: NetworkImage(
-                                              data["profilePhoto"].toString(),
-                                              //Image.network(data["profilePhoto"])
-                                            ) //;
-                                                );
-                                            // return Image.network(data["profilePhoto"]);
-                                            //return Text("Full Name: ${data['profilePhoto']} ${data['name']}");
-                                          }
-                                          return Text("loading");
-                                        },
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                        title: Column(
-
-                          children: [
-                            Text(
-                              "${groups["username"]} : ${stamp.toDate()} :" +
-                                  "\n\nYour Activity is called: " +
-                                  groups['groupName'] +
-                                  "\n\n the activity will take place on the: " +
-                                  groups["date"] +
-                                  "\n\ntogether with: " +
-                                  groups['friends'].toString() +
-                                  groups['friendsChosenUid'].toString() +
-                                  "\n\nwith the following preferences: ${groups["chosenActivities"]} "
-                                      + "id : ${groups.id}"
-
-                              + "\n\nhasVoted: ${groups["hasVotedForReal"]}"
-                          + "\n\n has everybody voted?: ${CheckWhetherAllVoted()}",
-                                style: TextStyle(
-                                    fontSize: 20, color: Colors.amber),
-                              ),
-                              Container(
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                      if (groups["hasVoted"]==firebaseAuth.currentUser!.uid) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(SnackBar(
-
-                                                content: Text(
-                                                    "You have already voted on this activity")));
-
-                                    } else {
-                                        print(groups.id);
-                                        Navigator.of(context)
-                                            .push(MaterialPageRoute(
-                                          builder: (context) =>
-                                              SwipeActivityScreen(
-                                                  activitiyUid: groups.id, activities: groups["chosenActivities"],baseActivities: groups["activityCounter"], hasVoted: groups["hasVotedForReal"], nameOfAcivitiy: groups["groupName"],
-                                          ),
-                                          // here the pre selected sample should be shown.
-                                        ));
-                                      }
+                                    }
                                   },
                                   child: Text("Go to Activity"),
                                 ),
@@ -630,135 +868,149 @@ class _ActivityScreenState extends State<ActivityScreen> {
                       ),
 
 
-
-
-
-
-
-
-
-
 //////////////////////////////////////// CASE YOU HAVE BEEN INVITED ///////////////////////// ///////////////////////// ///////////////////////// ///////////////////////// /////////////////////////
                     for (var item in groups["friendsChosenUid"])
-                      if (item == FirebaseAuth.instance.currentUser!.uid && listNames.length != friendsUids.length+1)
+                      if (item == FirebaseAuth.instance.currentUser!.uid &&
+                          listNames.length != friendsUids.length + 1)
                         Card(
                           elevation: 12,
-                      child: ListTile(
-                        leading:
-                             SingleChildScrollView(
+                          child: ListTile(
+                            leading:
+                            SingleChildScrollView(
                               child: Column(
-                          children: [
-                              Text("You have been invited by:"),
-                              Container(
-                                child: FutureBuilder<DocumentSnapshot>(
-                                  future: users.doc(groups["uid"]).get(),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<DocumentSnapshot>
-                                      snapshot) {
-                                    if (snapshot.hasError) {
-                                      return Text("Something went wrong");
-                                    }
+                                children: [
+                                  Text("You have been invited by:"),
+                                  Container(
+                                    child: FutureBuilder<DocumentSnapshot>(
+                                      future: users.doc(groups["uid"]).get(),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<DocumentSnapshot>
+                                          snapshot) {
+                                        if (snapshot.hasError) {
+                                          return Text("Something went wrong");
+                                        }
 
-                                    if (snapshot.hasData &&
-                                        !snapshot.data!.exists) {
-                                      return Text(
-                                          "Document does not exist");
-                                    }
+                                        if (snapshot.hasData &&
+                                            !snapshot.data!.exists) {
+                                          return Text(
+                                              "Document does not exist");
+                                        }
 
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.done) {
-                                      Map<String, dynamic> data =
-                                      snapshot.data!.data()
-                                      as Map<String, dynamic>;
-                                      return Column(
-                                        children: [
-                                          InkWell(
-                                            onTap: () =>
-                                                Navigator.of(context)
-                                                    .push(MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      ProfileScreen(
-                                                        uid: data["uid"],
-                                                      ),
-                                                )),
-                                            child: CircleAvatar(
-                                                foregroundImage:
-                                                NetworkImage(
-                                                  data["profilePhoto"]
-                                                      .toString(),
-                                                  //Image.network(data["profilePhoto"])
-                                                ) //;
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                      // return Image.network(data["profilePhoto"]);
-                                      //return Text("Full Name: ${data['profilePhoto']} ${data['name']}");
-                                    }
-                                    return Text("loading");
-                                  },
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.done) {
+                                          Map<String, dynamic> data =
+                                          snapshot.data!.data()
+                                          as Map<String, dynamic>;
+                                          return Column(
+                                            children: [
+                                              InkWell(
+                                                onTap: () =>
+                                                    Navigator.of(context)
+                                                        .push(MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          ProfileScreen(
+                                                            uid: data["uid"],
+                                                          ),
+                                                    )),
+                                                child: CircleAvatar(
+                                                    foregroundImage:
+                                                    NetworkImage(
+                                                      data["profilePhoto"]
+                                                          .toString(),
+                                                      //Image.network(data["profilePhoto"])
+                                                    ) //;
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                          // return Image.network(data["profilePhoto"]);
+                                          //return Text("Full Name: ${data['profilePhoto']} ${data['name']}");
+                                        }
+                                        return Text("loading");
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            title: Column(
+                              children: [
+                                Text(
+                                  "${groups["username"]} : ${stamp
+                                      .toDate()} :" +
+                                      "\n\nYour Activity is called: " +
+                                      groups['groupName'] +
+                                      "\n\n the activity will take place on the: " +
+                                      groups["date"] +
+                                      "\n\ntogether with: " +
+                                      groups['friends'].toString() +
+                                      "\n\nThese are the chosen Activities so far:  ${groups["activityCounter"]}"
+                                      +
+                                      "\n\nhasVoted: ${groups["hasVotedForReal"]}"
+                                      +
+                                      "\n\n has everybody voted?: ${CheckWhetherAllVoted()}",
+                                  style:
+                                  TextStyle(fontSize: 20, color: Colors.amber),
                                 ),
-                              ),
-                          ],
+                                Container(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      List<dynamic> listNames = [];
+                                      List<dynamic> friendsUids = [];
+                                      List<
+                                          dynamic> activityCounter = groups["activityCounter"];
+                                      print(
+                                          "this is the current user ${firebaseAuth
+                                              .currentUser!.uid}");
+                                      print(
+                                          "These are the users that have voted ${groups["hasVotedForReal"]}");
+                                      print(
+                                          "These are the chosen Activities ${groups["activityCounter"]}");
+                                      for (var items in groups["hasVotedForReal"]) {
+                                        listNames.add(items);
+                                      }
+                                      for (var items in groups["friendsChosenUid"]) {
+                                        friendsUids.add(items);
+                                      }
+                                      if (listNames.length !=
+                                          friendsUids.length) {
+                                        print("all have voted");
+                                      }
+                                      if (listNames.contains(
+                                          firebaseAuth.currentUser!.uid)) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "You have already voted on ${groups["groupName"]}")));
+                                        Navigator.of(context).pop(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ProfileScreen(
+                                                      uid: firebaseAuth
+                                                          .currentUser!.uid,)));
+                                      } else {
+                                        print(groups.id);
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SwipeActivityScreen(
+                                                        activitiyUid: groups.id,
+                                                        activities: groups["chosenActivities"],
+                                                        baseActivities: groups["activityCounter"],
+                                                        hasVoted: groups["hasVotedForReal"],
+                                                        nameOfAcivitiy: groups["groupName"])
+                                              // here the pre selected sample should be shown.
+
+                                            ));
+                                      }
+                                    },
+                                    child: Text("Go to Activity"),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                            ),
-                        title: Column(
-                          children: [
-                            Text(
-                              "${groups["username"]} : ${stamp.toDate()} :" +
-                                  "\n\nYour Activity is called: " +
-                                  groups['groupName'] +
-                                  "\n\n the activity will take place on the: " +
-                                  groups["date"] +
-                                  "\n\ntogether with: " +
-                                  groups['friends'].toString() +
-                                 "\n\nThese are the chosen Activities so far:  ${groups["activityCounter"]}"
-                                  + "\n\nhasVoted: ${groups["hasVotedForReal"]}"
-                                  + "\n\n has everybody voted?: ${CheckWhetherAllVoted()}",
-                              style:
-                              TextStyle(fontSize: 20, color: Colors.amber),
-                            ),
-                            Container(
-                              child: ElevatedButton(
-                                onPressed: ()  {
-                                  List<dynamic> listNames = [];
-                                  List<dynamic> friendsUids = [];
-                                  List<dynamic> activityCounter = groups["activityCounter"];
-                                  print("this is the current user ${firebaseAuth.currentUser!.uid}");
-                                  print("These are the users that have voted ${groups["hasVotedForReal"]}");
-                                  print("These are the chosen Activities ${groups["activityCounter"]}");
-                                  for(var items in groups["hasVotedForReal"]) {
-                                    listNames.add(items);}
-                                  for(var items in groups["friendsChosenUid"]) {
-                                    friendsUids.add(items);}
-                                    if(listNames.length!=friendsUids.length){
-                                      print("all have voted");
-                                    }
-                                    if(listNames.contains(firebaseAuth.currentUser!.uid)){
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(SnackBar(
-                                        content: Text(
-                                            "You have already voted on ${groups["groupName"]}")));
-                                    Navigator.of(context).pop(MaterialPageRoute(
-                                        builder: (context) => ProfileScreen(uid: firebaseAuth.currentUser!.uid,)));
-
-                                  }  else {
-                                    print(groups.id);
-                                    Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (context) => SwipeActivityScreen(activitiyUid: groups.id, activities: groups["chosenActivities"],baseActivities: groups["activityCounter"], hasVoted: groups["hasVotedForReal"], nameOfAcivitiy: groups["groupName"])
-                                      // here the pre selected sample should be shown.
-
-                                    ));
-                                  }
-
-                                },
-                                child: Text("Go to Activity"),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
 
                   ],
                 );
@@ -767,7 +1019,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
             return Text("Something went wrong");
           }
-          ),
+      ),
     );
   }
 

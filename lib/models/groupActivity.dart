@@ -18,6 +18,7 @@ class GroupActivityPackage{
   final List<String> hasVotedInSecondRound;
   final String secondRoundMainActivity;
   final List<String> secondRoundActivities;
+  final String mostFinalActivity;
 
 
 
@@ -43,7 +44,8 @@ class GroupActivityPackage{
     required this.activityCounter,
     required this.hasVotedInSecondRound,
     required this.secondRoundMainActivity,
-    required this.secondRoundActivities
+    required this.secondRoundActivities,
+    required this.mostFinalActivity
 
 
 
@@ -65,7 +67,8 @@ class GroupActivityPackage{
     "activityCounter" : activityCounter,
     "hasVotedInSecondRound" : hasVotedInSecondRound,
     "secondRoundMainActivity" : secondRoundMainActivity,
-    "secondRoundActivities" : secondRoundActivities
+    "secondRoundActivities" : secondRoundActivities,
+    "mostFinalActivity" : mostFinalActivity
 
   };
 
@@ -86,7 +89,8 @@ class GroupActivityPackage{
         activityCounter: snapshot["activityCounter"],
         hasVotedInSecondRound: snapshot["hasVotedInSecondRound"],
         secondRoundActivities: snapshot["secondRoundMainActivity"],
-        secondRoundMainActivity: snapshot["secondRoundActivities"]
+        secondRoundMainActivity: snapshot["secondRoundActivities"],
+        mostFinalActivity : snapshot["mostFinalActivity"]
     );
   }
 }

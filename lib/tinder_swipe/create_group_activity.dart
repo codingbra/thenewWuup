@@ -56,6 +56,8 @@ class _GroupActivityState extends State<GroupActivity> {
   List<String> secondRoundActivities = [];
   List<String> hasVotedInSecondRound = [];
   String secondRoundMainActivity = "";
+  String mostFinalActivity = "";
+
 
   final SwipeSearchController swipeSearchController =
   Get.put(SwipeSearchController());
@@ -118,7 +120,8 @@ class _GroupActivityState extends State<GroupActivity> {
         activityCounter,
         secondRoundActivities,
         hasVotedInSecondRound,
-        secondRoundMainActivity
+        secondRoundMainActivity,
+        mostFinalActivity
 
     );
   }

@@ -1,6 +1,6 @@
 List images = [
-  'assets/Chill.jpg',
-  'assets/Travel.jpg',
+  'assets/yoga.jpg',
+  'assets/Drink.jpg',
   'assets/Eat.jpg',
   'assets/Party.jpg',
   'assets/Sport.jpg',

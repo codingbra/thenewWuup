@@ -293,313 +293,325 @@ class _SecondRoundScreenState extends State<SecondRoundScreen> {
               return Card(
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Text("The chosen Activities${map}"),
-                      ],
-                    ),
-                    SizedBox(height: 40),
-                    Row(
-                      children: [
-                        Text(
-                            "Therefore, the chosen Activities is: $finalActivity"),
-                      ],
-                    ),
-                    SizedBox(height: 40),
-                    Row(
-                      children: [
-                        Text("The Subcategories of this activites are: "),
-                      ],
-                    ),
-                    SizedBox(
-                      child: Column(
-                        children: [
-                          if (finalActivity == "Chill") Text(chill.toString()),
-                          if (finalActivity == "Eat") Text(eat.toString()),
-                          if (finalActivity == "Sport") Text(sport.toString()),
-                          if (finalActivity == "Drink") Text(travel.toString()),
-                          if (finalActivity == "Party") Text(party.toString())
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final url = Uri.parse(
-                          'https://www.youtube.com/watch?v=xvFZjo5PgG0&ab_channel=Duran',
-                        );
-                        if (await canLaunchUrl(url)) {
-                          launchUrl(url);
-                        } else {
-                          // ignore: avoid_print
-                          print("Can't launch $url");
-                        }
-                      },
-                      child: const Text('More Information just for you!!!'),
-                    ),
+
+
+                    // Row(
+                    //   children: [
+                    //     Text("The chosen Activities${map}"),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 40),
+                    // Row(
+                    //   children: [
+                    //     Text(
+                    //         "Therefore, the chosen Activities is: $finalActivity"),
+                    //   ],
+                    // ),
+                    // SizedBox(height: 40),
+                    // Row(
+                    //   children: [
+                    //     Text("The Subcategories of this activites are: "),
+                    //   ],
+                    // ),
+                    // SizedBox(
+                    //   child: Column(
+                    //     children: [
+                    //       if (finalActivity == "Chill") Text(chill.toString()),
+                    //       if (finalActivity == "Eat") Text(eat.toString()),
+                    //       if (finalActivity == "Sport") Text(sport.toString()),
+                    //       if (finalActivity == "Drink") Text(travel.toString()),
+                    //       if (finalActivity == "Party") Text(party.toString())
+                    //     ],
+                    //   ),
+                    // ),
+                    // SizedBox(
+                    //   height: 50,
+                    // ),
+                    // ElevatedButton(
+                    //   onPressed: () async {
+                    //     final url = Uri.parse(
+                    //       'https://www.youtube.com/watch?v=xvFZjo5PgG0&ab_channel=Duran',
+                    //     );
+                    //     if (await canLaunchUrl(url)) {
+                    //       launchUrl(url);
+                    //     } else {
+                    //       // ignore: avoid_print
+                    //       print("Can't launch $url");
+                    //     }
+                    //   },
+                    //   child: const Text('More Information just for you!!!'),
+                    // ),
 
                     // ACTIVITY == EAT
 
                     if (finalActivity == "Eat")
-                      SizedBox(
-                        height: 300,
-                        child: SwipeCards(
-                          matchEngine: _matchEngine!,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              alignment: Alignment.bottomLeft,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(eatImages[index]),
-                                  fit: BoxFit.cover,
+                      Flexible(
+                        child: SizedBox(
+                          height: 700,
+                          child: SwipeCards(
+                            matchEngine: _matchEngine!,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                alignment: Alignment.bottomLeft,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(eatImages[index]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    eat[index],
-                                    style: TextStyle(
-                                        fontSize: 32,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          onStackFinished: () {
-                            secondRoundVotes
-                                .add(firebaseAuth.currentUser!.uid);
-                            print(
-                                "these are the people that have voted $secondRoundVotes");
-                            print(
-                                "names on stack finished: $activitiesOfSecondRound");
-                            firestoreMethods.addSecondRoundVoting(
-                                widget.activitiyUid,
-                                activitiesOfSecondRound,
-                                secondRoundVotes,
-                                finalActivity);
-                            return ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    "Congratulations you have made it through :)"),
-                              ),
-                            );
-                          },
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      eat[index],
+                                      style: TextStyle(
+                                          fontSize: 32,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                            onStackFinished: () {
+                              secondRoundVotes
+                                  .add(firebaseAuth.currentUser!.uid);
+                              print(
+                                  "these are the people that have voted $secondRoundVotes");
+                              print(
+                                  "names on stack finished: $activitiesOfSecondRound");
+                              firestoreMethods.addSecondRoundVoting(
+                                  widget.activitiyUid,
+                                  activitiesOfSecondRound,
+                                  secondRoundVotes,
+                                  finalActivity);
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "Congratulations you have made it through :)"),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
 
                     // ACTIVITY == CHILL
                     if (finalActivity == "Chill")
-                      SizedBox(
-                        height: 300,
-                        child: SwipeCards(
-                          matchEngine: _matchEngine!,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              alignment: Alignment.bottomLeft,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(chillImages[index]),
-                                  fit: BoxFit.cover,
+                      Flexible(
+                        child: SizedBox(
+                          height: 700,
+                          child: SwipeCards(
+                            matchEngine: _matchEngine!,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                alignment: Alignment.bottomLeft,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(chillImages[index]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    chill[index],
-                                    style: TextStyle(
-                                        fontSize: 32,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          onStackFinished: () {
-                            secondRoundVotes
-                                .add(firebaseAuth.currentUser!.uid);
-                            print("these are the mfs that have voted in snd round $secondRoundVotes");
-                            firestoreMethods.addSecondRoundVoting(
-                                widget.activitiyUid,
-                                activitiesOfSecondRound,
-                                secondRoundVotes,
-                                finalActivity);
-                            return ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    "Congratulations you have made it through :)"),
-                              ),
-                            );
-                          },
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      chill[index],
+                                      style: TextStyle(
+                                          fontSize: 32,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                            onStackFinished: () {
+                              secondRoundVotes
+                                  .add(firebaseAuth.currentUser!.uid);
+                              print("these are the mfs that have voted in snd round $secondRoundVotes");
+                              firestoreMethods.addSecondRoundVoting(
+                                  widget.activitiyUid,
+                                  activitiesOfSecondRound,
+                                  secondRoundVotes,
+                                  finalActivity);
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "Congratulations you have made it through :)"),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
 
                     // ACTIVITY == PARTY
 
                     if (finalActivity == "Travel")
-                      SizedBox(
-                        height: 300,
-                        child: SwipeCards(
-                          matchEngine: _matchEngine!,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              alignment: Alignment.bottomLeft,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(travelImages[index]),
-                                  fit: BoxFit.cover,
+                      Flexible(
+                        child: SizedBox(
+                          height: 700,
+                          child: SwipeCards(
+                            matchEngine: _matchEngine!,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                alignment: Alignment.bottomLeft,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(travelImages[index]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    travel[index],
-                                    style: TextStyle(
-                                        fontSize: 32,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          onStackFinished: () {
-                            secondRoundVotes
-                                .add(firebaseAuth.currentUser!.uid);
-                            firestoreMethods.addSecondRoundVoting(
-                                widget.activitiyUid,
-                                activitiesOfSecondRound,
-                                secondRoundVotes,
-                                finalActivity);
-                            return ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    "Congratulations you have made it through :)"),
-                              ),
-                            );
-                          },
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      travel[index],
+                                      style: TextStyle(
+                                          fontSize: 32,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                            onStackFinished: () {
+                              secondRoundVotes
+                                  .add(firebaseAuth.currentUser!.uid);
+                              firestoreMethods.addSecondRoundVoting(
+                                  widget.activitiyUid,
+                                  activitiesOfSecondRound,
+                                  secondRoundVotes,
+                                  finalActivity);
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "Congratulations you have made it through :)"),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
 
                     if (finalActivity == "Party")
-                      SizedBox(
-                        height: 300,
-                        child: SwipeCards(
-                          matchEngine: _matchEngine!,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              alignment: Alignment.bottomLeft,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(partyImages[index]),
-                                  fit: BoxFit.cover,
+                      Flexible(
+                        child: SizedBox(
+                          height: 700,
+                          child: SwipeCards(
+                            matchEngine: _matchEngine!,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                alignment: Alignment.bottomLeft,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(partyImages[index]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    party[index],
-                                    style: TextStyle(
-                                        fontSize: 32,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          onStackFinished: () {
-                            secondRoundVotes
-                                .add(firebaseAuth.currentUser!.uid);
-                            firestoreMethods.addSecondRoundVoting(
-                                widget.activitiyUid,
-                                activitiesOfSecondRound,
-                                secondRoundVotes,
-                                finalActivity);
-                            return ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                    "Congratulations you have made it through :)"),
-                              ),
-                            );
-                          },
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      party[index],
+                                      style: TextStyle(
+                                          fontSize: 32,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                            onStackFinished: () {
+                              secondRoundVotes
+                                  .add(firebaseAuth.currentUser!.uid);
+                              firestoreMethods.addSecondRoundVoting(
+                                  widget.activitiyUid,
+                                  activitiesOfSecondRound,
+                                  secondRoundVotes,
+                                  finalActivity);
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "Congratulations you have made it through :)"),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
 
                     // FINAL ACTIVITY = SPORT
 
                     if (finalActivity == "Sport")
-                      SizedBox(
-                        height: 300,
-                        child: SwipeCards(
-                          matchEngine: _matchEngine!,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              alignment: Alignment.bottomLeft,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(sportImages[index]),
-                                  fit: BoxFit.cover,
+                      Flexible(
+                        child: SizedBox(
+                          height: 700,
+                          child: SwipeCards(
+                            matchEngine: _matchEngine!,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                alignment: Alignment.bottomLeft,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(sportImages[index]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    sport[index],
-                                    style: TextStyle(
-                                        fontSize: 32,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          onStackFinished: () {
-                            print("this is the final activity on stack finished $finalActivity");
-                            secondRoundVotes
-                                .add(firebaseAuth.currentUser!.uid);
-                            print("these are the mfs that have voted in snd round $secondRoundVotes");
-                            print("this is the current user: ${firebaseAuth.currentUser!.uid}");
-                            firestoreMethods.addSecondRoundVoting(
-                                widget.activitiyUid,
-                                activitiesOfSecondRound,
-                                secondRoundVotes,
-                                finalActivity);
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const FinalActivityScreen(),
-                            ));
-                            return ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                    "Congratulations you have made it through :)"),
-                              ),
-                            );
-                          },
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      sport[index],
+                                      style: TextStyle(
+                                          fontSize: 32,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                            onStackFinished: () {
+                              print("this is the final activity on stack finished $finalActivity");
+                              secondRoundVotes
+                                  .add(firebaseAuth.currentUser!.uid);
+                              print("these are the mfs that have voted in snd round $secondRoundVotes");
+                              print("this is the current user: ${firebaseAuth.currentUser!.uid}");
+                              firestoreMethods.addSecondRoundVoting(
+                                  widget.activitiyUid,
+                                  activitiesOfSecondRound,
+                                  secondRoundVotes,
+                                  finalActivity);
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => const FinalActivityScreen(),
+                              ));
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Congratulations you have made it through :)"),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                   ],

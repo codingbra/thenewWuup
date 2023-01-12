@@ -25,7 +25,10 @@ class FirestoreMethods extends GetxController {
       List<String> activityCounter,
       List<String> hasVotedInSecondRound,
       List<String> secondRoundActivities,
-      String secondRoundMainActivity) async {
+      String secondRoundMainActivity,
+      String mostFinalActivity
+
+      ) async {
     // has voted should be list // chosen activities should be map with no of likes
 
     String res = "Some error ocurred";
@@ -54,7 +57,8 @@ class FirestoreMethods extends GetxController {
           activityCounter: chosenActivities,
           hasVotedInSecondRound: hasVotedInSecondRound,
           secondRoundActivities: secondRoundActivities,
-          secondRoundMainActivity: secondRoundMainActivity
+          secondRoundMainActivity: secondRoundMainActivity,
+          mostFinalActivity : mostFinalActivity
 
           // what activities have been liked?
           );
@@ -97,5 +101,17 @@ class FirestoreMethods extends GetxController {
         .collection("groups")
         .doc(activityUid)
         .update({"secondRoundMainActivity": secondRoundMainActivity});
+  }
+
+  Future addTheMostFinalActivity(String mostFinalActivity, String activityUid, Uri linkToActivity) async {
+    await _firestore
+        .collection("groups")
+        .doc(activityUid)
+        .update({"mostFinalActivity": mostFinalActivity});
+
+    await _firestore
+        .collection("groups")
+        .doc(activityUid)
+        .update({"linkToActivity": linkToActivity});
   }
 }
