@@ -21,6 +21,7 @@ import 'package:tiktokclone/views/widgets/text_inputField.dart';
 import 'package:tiktokclone/models/user.dart' as model;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
 
 // this is the core class to create group activities where all the information
 // is gathered to create a group activity.
@@ -138,6 +139,7 @@ class _GroupActivityState extends State<GroupActivity> {
   List<String> likedActivitiesMethod() {
     return likedActivities;
   }
+  bool stackFinished = false;
 
 //  void addLikesToMap(String name, int counter){
 //    firestore.collection("groups").doc("Liked Activities ${firebaseAuth.currentUser!.uid}").set(
@@ -175,10 +177,13 @@ class _GroupActivityState extends State<GroupActivity> {
     print(likedActivities.toString());
   }
 
+  final _formKey = GlobalKey<FormState>();
+  
   @override
   Widget build(BuildContext context) {
     CollectionReference groups =
     FirebaseFirestore.instance.collection('groups');
+    print(stackFinished);
 
     return Scaffold(
       appBar: AppBar(
@@ -189,177 +194,257 @@ class _GroupActivityState extends State<GroupActivity> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(15),
-            child: Column(
-              children: [
-                TextInputField(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  TextFormField(
                   controller: _groupNameController,
-                  labelText: "Name your Group: ",
-                  icon: Icons.local_activity,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextInputField(
-                  controller: _locationController,
-                  labelText: "Location: ",
-                  icon: Icons.place,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextInputField(
-                  controller: _timeController,
-                  labelText: "Date: ",
-                  icon: Icons.date_range,
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TextFormField(
-                  decoration: const InputDecoration(
-                      filled: false,
-                      hintText: "Add your Friends",
-                      hintStyle: TextStyle(fontSize: 18, color: Colors.white)),
-                  onFieldSubmitted: (value) =>
-                      swipeSearchController.searchUser(value),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Obx(() {
-                  return Row(
+                  decoration: InputDecoration(
+                    labelText: "Name your Group: ",
+                    icon: Icon(Icons.local_activity),
+                  ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a group name';
+                      }
+                      return null;
+                    },
+
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a location';
+                      }
+                      return null;
+                    },
+                    //autofillHints: ,
+                    controller: _locationController,
+                    decoration: InputDecoration(
+                      labelText: "Location: ",
+                      icon: Icon(Icons.place),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a date';
+                      }
+                      return null;
+                    },
+                    controller: _timeController,
+                    //editing controller of this TextField
+                    decoration: InputDecoration(
+                        icon: Icon(Icons.calendar_today), //icon of text field
+                        labelText: "Enter Date" //label text of field
+                    ),
+                    readOnly: true,
+                    //set it true, so that user will not able to edit text
+                    onTap: () async {
+                      DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2023),
+                          //DateTime.now() - not to allow to choose before today.
+                          lastDate: DateTime(2100));
+
+                      if (pickedDate != null) {
+                        print(
+                            pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                        String formattedDate =
+                        DateFormat('dd.MM.yyyy').format(pickedDate);
+                        print(
+                            formattedDate); //formatted date output using intl package =>  2021-03-16
+                        setState(() {
+                          _timeController.text =
+                              formattedDate; //set output date to TextField value.
+                        });
+                      } else {}
+                    },
+                  ),
+                  SizedBox(
+                    height: 90,
+                  ),
+                  TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please invite at least one friend';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                        filled: false,
+                        hintText: "Add your Friends",
+                        hintStyle: TextStyle(fontSize: 18, color: Colors.white)),
+                    onFieldSubmitted: (value) =>
+                        swipeSearchController.searchUser(value),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Obx(() {
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 200,
+                            child: ListView.builder(
+                                itemCount:
+                                swipeSearchController.searchedUsers.length,
+                                itemBuilder: (context, index) {
+                                  model.User user =
+                                  swipeSearchController.searchedUsers[index];
+                                  return InkWell(
+                                    onTap: () async {
+                                      if (friendsChosen.contains(user.name)) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                            content:
+                                            Text("already in group")));
+                                      } else if (user.uid ==
+                                          firebaseAuth.currentUser!.uid) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                            content: Text(
+                                                "You cannot add yourself you stupid fuck")));
+                                      } else {
+                                        friendsChosen.add(user.name);
+                                        print(friendsChosen);
+                                        friendsChosenUid.add(user.uid);
+                                      }
+                                    },
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                          user.profilePhoto,
+                                        ),
+                                      ),
+                                      title: Text(
+                                        user.name,
+                                        style: const TextStyle(
+                                            fontSize: 18, color: Colors.white),
+                                      ),
+                                    ),
+                                  );
+                                }),
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                  const SizedBox(
+                    height: 90,
+                  ),
+                  Text(
+                    "Choose your preferences:",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
                     children: [
                       Expanded(
                         child: SizedBox(
-                          height: 120,
-                          child: ListView.builder(
-                              itemCount:
-                              swipeSearchController.searchedUsers.length,
-                              itemBuilder: (context, index) {
-                                model.User user =
-                                swipeSearchController.searchedUsers[index];
-                                return InkWell(
-                                  onTap: () async {
-                                    if (friendsChosen.contains(user.name)) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                          content:
-                                          Text("already in group")));
-                                    } else if (user.uid ==
-                                        firebaseAuth.currentUser!.uid) {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                          content: Text(
-                                              "You cannot add yourself you stupid fuck")));
-                                    } else {
-                                      friendsChosen.add(user.name);
-                                      print(friendsChosen);
-                                      friendsChosenUid.add(user.uid);
-                                    }
-                                  },
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundImage: NetworkImage(
-                                        user.profilePhoto,
-                                      ),
-                                    ),
-                                    title: Text(
-                                      user.name,
-                                      style: const TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
+                          height: 300,
+                          child: SwipeCards(
+                            matchEngine: _matchEngine!,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                alignment: Alignment.bottomLeft,
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage(images[index]),
+                                    fit: BoxFit.cover,
                                   ),
-                                );
-                              }),
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      names[index],
+                                      style: TextStyle(
+                                          fontSize: 32,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                            onStackFinished: () {
+                              stackFinished = true;
+                              print(stackFinished);
+                              // Future.delayed(Duration(seconds: 3), () {
+                              //   Navigator.of(context).push(MaterialPageRoute(
+                              //       builder: (context) => ReadData()));
+                              // }
+                              // );
+                              return ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      "Congratulations you have made it through :)"),
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ),
                     ],
-                  );
-                }),
-                const SizedBox(
-                  height: 20,
-                ),
-                Text(
-                  "Choose your preferences:",
-                  style: TextStyle(fontSize: 20),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 300,
-                        child: SwipeCards(
-                          matchEngine: _matchEngine!,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Container(
-                              alignment: Alignment.bottomLeft,
-                              decoration: BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage(images[index]),
-                                  fit: BoxFit.cover,
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  InkWell(
+                    child: Center(
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.green,
+                        child: Icon(Icons.add),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            // If the form is valid, display a snackbar. In the real world,
+                            // you'd often call a server or save the information in a database.
+                            if(stackFinished == true){
+                              votedForReal.add(firebaseAuth.currentUser!.uid);
+                              postGroup();
+                              //print(friendsList);
+                              // FirebaseFirestore.instance.collection('groups').add(friendsList.);//.then((value) => print(
+                              //     'DocumentSnapshot added with ID: ${value.id}'));
+                              setState(() {});
+                              Navigator .of(context).push(MaterialPageRoute(
+                                  builder: (context) => ConfirmationScreen()));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      "Please swipe all fucking activities are you stupid?"),
                                 ),
-                                color: Colors.red,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    names[index],
-                                    style: TextStyle(
-                                        fontSize: 32,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                  )
-                                ],
-                              ),
-                            );
-                          },
-                          onStackFinished: () {
-                            // Future.delayed(Duration(seconds: 3), () {
-                            //   Navigator.of(context).push(MaterialPageRoute(
-                            //       builder: (context) => ReadData()));
-                            // }
-                            // );
-                            return ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
+                              );
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
                                 content: Text(
-                                    "Congratulations you have made it through :)"),
+                                    "Some fields are empty, fill them out bitch"),
                               ),
                             );
-                          },
-                        ),
+                          }
+                        },
                       ),
                     ),
-                  ],
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                InkWell(
-                  child: Center(
-                    child: FloatingActionButton(
-                      backgroundColor: Colors.green,
-                      child: Icon(Icons.add),
-                      onPressed: () {
-                        votedForReal.add(firebaseAuth.currentUser!.uid);
-                        postGroup();
-
-                        //print(friendsList);
-                        // FirebaseFirestore.instance.collection('groups').add(friendsList.);//.then((value) => print(
-                        //     'DocumentSnapshot added with ID: ${value.id}'));
-                        setState(() {});
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ConfirmationScreen()));
-                      },
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
